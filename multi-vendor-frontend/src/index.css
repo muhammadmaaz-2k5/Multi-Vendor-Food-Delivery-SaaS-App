@@ -249,3 +249,193 @@ body {
   font-weight: 500;
 }
 
+/* Customer B2C Layout */
+.customer-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f8fafc;
+}
+
+.customer-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid #e2e8f0;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.cart-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: white;
+  border: 1px solid #e2e8f0;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text-color);
+}
+
+.cart-button:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.hero-banner {
+  background: linear-gradient(135deg, #ff2b5e 0%, #ff5e83 100%);
+  color: white;
+  padding: 5rem 2rem;
+  text-align: center;
+  border-radius: 0 0 24px 24px;
+  margin-bottom: 3rem;
+  box-shadow: 0 10px 15px -3px rgba(255, 43, 94, 0.3);
+}
+
+.hero-banner h1 {
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+}
+
+.hero-banner p {
+  font-size: 1.25rem;
+  opacity: 0.9;
+  max-width: 600px;
+  margin: 0 auto 2rem auto;
+}
+
+.search-bar-container {
+  max-width: 600px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.search-input {
+  width: 100%;
+  padding: 1rem 1.5rem 1rem 3.5rem;
+  border-radius: 9999px;
+  border: none;
+  font-size: 1.1rem;
+  color: var(--text-color);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  outline: none;
+  transition: box-shadow 0.2s;
+}
+
+.search-input:focus {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+}
+
+/* Restaurant Page B2C */
+.restaurant-hero {
+  position: relative;
+  height: 350px;
+  background-color: #1e293b;
+  display: flex;
+  align-items: flex-end;
+  padding: 0 2rem 2rem 2rem;
+  margin-bottom: 4rem;
+}
+
+.restaurant-hero-content {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 800px;
+  width: 100%;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  transform: translateY(4rem);
+}
+
+.restaurant-menu-layout {
+  display: flex;
+  gap: 3rem;
+  max-width: 1200px;
+  margin: 6rem auto 4rem auto;
+  padding: 0 2rem;
+}
+
+.menu-sidebar {
+  width: 250px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 100px;
+  align-self: flex-start;
+}
+
+.menu-sidebar-link {
+  display: block;
+  padding: 0.75rem 1rem;
+  color: var(--text-light);
+  font-weight: 500;
+  text-decoration: none;
+  border-radius: 8px;
+  margin-bottom: 0.25rem;
+  transition: all 0.2s;
+}
+
+.menu-sidebar-link:hover, .menu-sidebar-link.active {
+  background-color: #ffe6eb;
+  color: var(--primary-color);
+  font-weight: 700;
+}
+
+.menu-content {
+  flex: 1;
+}
+
+.menu-category-section {
+  margin-bottom: 4rem;
+}
+
+.menu-item-card {
+  display: flex;
+  justify-content: space-between;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 16px;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+}
+
+.menu-item-card:hover {
+  border-color: #ffe6eb;
+  box-shadow: 0 10px 15px -3px rgba(255, 43, 94, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Animations */
+@keyframes slideLeft {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+

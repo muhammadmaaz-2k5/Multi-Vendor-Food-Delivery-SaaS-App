@@ -10,7 +10,7 @@ The platform enables restaurants of any size to launch and operate their own onl
 
 Instead of a monolithic approach, the project uses three distinct repositories/folders for a clean separation of concerns:
 
-- **Frontend (`multi-vendor-frontend`):** React/Next.js + TypeScript
+- **Frontend (`multi-vendor-frontend`):** React/Next.js + TypeScript + Redux RTK
 - **Backend (`multi-vendor-foodpanda-backend`):** Node.js (Express) + TypeScript, PostgreSQL + Prisma, Redis + BullMQ
 - **Mobile (`multi-vendor-mobile-app`):** React Native (Expo)
 - **Infrastructure:** Docker, GitHub Actions CI/CD

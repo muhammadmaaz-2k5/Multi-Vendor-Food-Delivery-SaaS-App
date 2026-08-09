@@ -4,7 +4,7 @@ Absolutely. Below is a **production-grade master project document** you can use 
 
 **Project Type:** Multi-Tenant SaaS / Marketplace / Food Delivery / E-Commerce
 **Architecture:** Multi-repo / Distinct Folders
-**Frontend:** React/Next.js + TypeScript (`multi-vendor-frontend`)
+**Frontend:** React/Next.js + TypeScript + Redux RTK (`multi-vendor-frontend`)
 **Backend:** Node.js (Express) + TypeScript (`multi-vendor-foodpanda-backend`)
 **Database:** PostgreSQL + Prisma
 **Cache/Queue:** Redis + BullMQ

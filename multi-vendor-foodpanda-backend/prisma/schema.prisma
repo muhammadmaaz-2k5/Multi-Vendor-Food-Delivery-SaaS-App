@@ -38,8 +38,11 @@ model Tenant {
   description        String?
   logo               String?
   coverImage         String?
-  isActive           Boolean @default(false)
-  verificationStatus String  @default("PENDING") // PENDING, UNDER_REVIEW, APPROVED, REJECTED
+  cuisine            String[] @default([])
+  rating             Float    @default(4.5)
+  deliveryTime       String   @default("30-45 min")
+  isActive           Boolean  @default(true)
+  verificationStatus String   @default("APPROVED") // PENDING, UNDER_REVIEW, APPROVED, REJECTED
 
   // Multi-tenant isolation relationships
   branches  Branch[]
