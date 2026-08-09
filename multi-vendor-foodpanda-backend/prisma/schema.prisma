@@ -1,0 +1,120 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// -----------------------------------------------------------------------------
+// IDENTITY & USERS
+// -----------------------------------------------------------------------------
+model User {
+  id           String  @id @default(uuid())
+  email        String  @unique
+  passwordHash String
+  firstName    String
+  lastName     String
+  phone        String?
+  profileImage String?
+
+  // A single user can have multiple roles across different restaurants (tenants).
+  userRoles UserRole[]
+
+  // Links to specific profiles
+  customer Customer?
+  rider    Rider?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// -----------------------------------------------------------------------------
+// MULTI-TENANCY (RESTAURANTS)
+// -----------------------------------------------------------------------------
+model Tenant {
+  id                 String  @id @default(uuid())
+  name               String
+  description        String?
+  logo               String?
+  coverImage         String?
+  isActive           Boolean @default(false)
+  verificationStatus String  @default("PENDING") // PENDING, UNDER_REVIEW, APPROVED, REJECTED
+
+  // Multi-tenant isolation relationships
+  branches  Branch[]
+  roles     Role[] // Tenant-specific custom roles (optional)
+  userRoles UserRole[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// -----------------------------------------------------------------------------
+// ROLE-BASED ACCESS CONTROL (RBAC)
+// -----------------------------------------------------------------------------
+model Role {
+  id          String  @id @default(uuid())
+  name        String // e.g., "SUPER_ADMIN", "RESTAURANT_OWNER", "KITCHEN_STAFF"
+  description String?
+
+  // Global roles have tenantId = null. Custom restaurant roles have a tenantId.
+  tenantId String?
+  tenant   Tenant? @relation(fields: [tenantId], references: [id])
+
+  permissions Permission[]
+  userRoles   UserRole[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Permission {
+  id          String  @id @default(uuid())
+  action      String // e.g., "order.read", "menu.create"
+  description String?
+
+  roles Role[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UserRole {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  roleId String
+  role   Role   @relation(fields: [roleId], references: [id])
+
+  // Context: What restaurant does this role apply to? 
+  // e.g., User A is "MANAGER" at Tenant X.
+  tenantId String?
+  tenant   Tenant? @relation(fields: [tenantId], references: [id])
+
+  // A user can only hold a specific role once per tenant
+  @@unique([userId, roleId, tenantId])
+}
+
+// -----------------------------------------------------------------------------
+// STUBS (To satisfy relations for now, fully fleshed out in later sprints)
+// -----------------------------------------------------------------------------
+model Customer {
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+}
+
+model Rider {
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+}
+
+model Branch {
+  id       String @id @default(uuid())
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
+  name     String
+}

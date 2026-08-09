@@ -1,0 +1,32 @@
+name: Mobile CI
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'multi-vendor-mobile-app/**'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'multi-vendor-mobile-app/**'
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: multi-vendor-mobile-app
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Bun
+      uses: oven-sh/setup-bun@v1
+      with:
+        bun-version: 'latest'
+        
+    - name: Install dependencies
+      run: bun install
+      
+    - name: Typecheck
+      run: bun x tsc --noEmit
