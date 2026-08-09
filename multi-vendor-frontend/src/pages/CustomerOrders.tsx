@@ -5,7 +5,7 @@ import { io, Socket } from 'socket.io-client';
 import Map, { Marker } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
-const MAPBOX_TOKEN = 'pk.YOUR_MAPBOX_PUBLIC_TOKEN_HERE';
+const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || '';
 
 export default function CustomerOrders() {
   const [searchParams, setSearchParams] = useSearchParams();
