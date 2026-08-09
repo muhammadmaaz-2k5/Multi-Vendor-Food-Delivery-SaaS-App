@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { X, Plus, Minus, ShoppingBag } from 'lucide-react';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { updateQuantity } from '../store/slices/cartSlice';
@@ -11,6 +12,7 @@ interface CartDrawerProps {
 export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const { items, cartTotal } = useAppSelector(state => state.cart);
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   
   const handleUpdateQuantity = (id: string, quantity: number) => {
     dispatch(updateQuantity({ id, quantity }));
@@ -107,8 +109,8 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
             <button 
               onClick={() => {
-                alert('Proceeding to Checkout! (Checkout Flow coming in next sprint)');
                 onClose();
+                navigate('/checkout');
               }}
               style={{ width: '100%', padding: '1rem', background: 'var(--primary-color)', color: 'white', border: 'none', borderRadius: '8px', fontSize: '1.1rem', fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 6px -1px rgba(225, 29, 72, 0.2)' }}
             >

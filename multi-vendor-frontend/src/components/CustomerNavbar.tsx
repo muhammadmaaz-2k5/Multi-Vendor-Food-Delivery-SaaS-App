@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ShoppingBag, User, UtensilsCrossed } from 'lucide-react';
+import { ShoppingBag, User, UtensilsCrossed, Package } from 'lucide-react';
 import { useAppSelector } from '../store/hooks';
 
 interface CustomerNavbarProps {
@@ -18,6 +18,10 @@ export default function CustomerNavbar({ onCartClick }: CustomerNavbarProps) {
       </Link>
 
       <div className="nav-actions">
+        <Link to="/orders" className="nav-link" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none' }}>
+          <Package size={20} />
+          <span>My Orders</span>
+        </Link>
         <button className="cart-button" onClick={onCartClick}>
           <ShoppingBag size={20} />
           <span>Cart ({totalItems})</span>

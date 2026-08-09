@@ -6,6 +6,8 @@ import DashboardHome from './pages/DashboardHome';
 import CustomerLayout from './layouts/CustomerLayout';
 import CustomerHome from './pages/CustomerHome';
 import CustomerRestaurant from './pages/CustomerRestaurant';
+import CustomerCheckout from './pages/CustomerCheckout';
+import CustomerOrders from './pages/CustomerOrders';
 import { Provider } from 'react-redux';
 import { store } from './store';
 
@@ -18,6 +20,8 @@ function App() {
         <Route path="/" element={<CustomerLayout />}>
           <Route index element={<CustomerHome />} />
           <Route path="restaurants/:id" element={<CustomerRestaurant />} />
+          <Route path="checkout" element={<CustomerCheckout />} />
+          <Route path="orders" element={<CustomerOrders />} />
         </Route>
 
         {/* Auth Routes */}

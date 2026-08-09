@@ -3,17 +3,17 @@
 **Sprint Goal:** Enable customers to complete their purchases securely via a payment gateway and implement the core order state machine on the backend.
 
 **Duration:** 2 Weeks  
-**Status:** ⏳ UPCOMING
+**Status:** 🏃‍♂️ IN PROGRESS
 
 ## 📋 Sprint Backlog
 
 | Task ID | Description | Assignee | Status | Story Points |
 | :--- | :--- | :--- | :--- | :--- |
-| **QB-401** | Checkout UI (Address Selection, Delivery Notes) | TBD | 📝 To Do | 3 |
-| **QB-402** | Payment Gateway Integration (Stripe) & Webhooks | TBD | 📝 To Do | 8 |
-| **QB-403** | Order Creation API & State Machine Initialization | TBD | 📝 To Do | 8 |
-| **QB-404** | Order History UI for Customer | TBD | 📝 To Do | 3 |
-| **QB-405** | Order Status History Tracking (Database logging) | TBD | 📝 To Do | 3 |
+| **QB-401** | Checkout UI (Address Selection, Delivery Notes) | TBD | ✅ Done | 3 |
+| **QB-402** | Payment Gateway Integration (Stripe) & Webhooks | TBD | ✅ Done | 8 |
+| **QB-403** | Order Creation API & State Machine Initialization | TBD | ✅ Done | 8 |
+| **QB-404** | Order History UI for Customer | TBD | ✅ Done | 3 |
+| **QB-405** | Order Status History Tracking (Database logging) | TBD | ✅ Done | 3 |
 
 ## 🛑 Blockers / Risks
 - Stripe webhook testing requires local tunneling (e.g., ngrok) for the dev environment.
