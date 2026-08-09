@@ -1,7 +1,5 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '../../config/prisma.js';
 
 // MVP Hack: Auto-create or fetch a Dummy Rider for mobile app testing
 export const getMyProfile = async (req: Request, res: Response) => {

@@ -50,6 +50,8 @@ export default function CustomerCheckout() {
 
       const data = await response.json();
       if (response.ok && data.url) {
+        // Persist phone for AI Recommendations
+        localStorage.setItem('qb_customer_phone', formData.phone);
         window.location.href = data.url;
       } else {
         setError(data.error || 'Failed to create checkout session.');

@@ -169,3 +169,48 @@ export const getReviews = async (req: Request, res: Response, next: NextFunction
     next(error);
   }
 };
+
+export const getAnalytics = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { tenantId } = req.params;
+
+    // Get all DELIVERED orders for this tenant
+    const deliveredOrders = await prisma.order.findMany({
+      where: { tenantId, status: 'DELIVERED' },
+      include: { items: true }
+    });
+
+    const totalOrders = deliveredOrders.length;
+    const totalRevenue = deliveredOrders.reduce((sum, order) => sum + order.totalAmount, 0);
+    const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
+
+    // Calculate top products
+    const productCounts: Record<string, { name: string, quantity: number, revenue: number }> = {};
+    
+    deliveredOrders.forEach(order => {
+      order.items.forEach(item => {
+        if (!productCounts[item.id]) {
+          productCounts[item.id] = { name: item.name, quantity: 0, revenue: 0 };
+        }
+        productCounts[item.id].quantity += item.quantity;
+        productCounts[item.id].revenue += (item.price * item.quantity);
+      });
+    });
+
+    const topProducts = Object.values(productCounts)
+      .sort((a, b) => b.quantity - a.quantity)
+      .slice(0, 5);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        totalOrders,
+        totalRevenue,
+        averageOrderValue,
+        topProducts
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};

@@ -1,10 +1,8 @@
 import { Request, Response } from 'express';
 import { stripeClient } from '../../lib/stripe.js';
 import { getIO } from '../../lib/socket.js';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../../config/prisma.js';
 import { AuditService } from '../../lib/audit.js';
-
-const prisma = new PrismaClient();
 
 // 1. Onboard a Connected Account
 export const onboardTenant = async (req: Request, res: Response) => {

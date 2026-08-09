@@ -133,9 +133,11 @@ model Rider {
   userId     String   @unique
   user       User     @relation(fields: [userId], references: [id])
   
-  isOnline   Boolean  @default(false)
-  currentLat Float?
-  currentLng Float?
+  isOnline      Boolean  @default(false)
+  currentLat    Float?
+  currentLng    Float?
+  averageRating Float    @default(0)
+  totalRatings  Int      @default(0)
 
   orders     Order[]
 
@@ -241,6 +243,8 @@ model Order {
   
   riderId         String?
   rider           Rider?   @relation(fields: [riderId], references: [id])
+  riderAssignedAt DateTime?
+  deliveredAt     DateTime?
 
   subtotal        Float
   deliveryFee     Float

@@ -1,9 +1,7 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../../config/prisma.js';
 import { getIO } from '../../lib/socket.js';
 import { NotificationService } from '../../lib/notifications.js';
-
-const prisma = new PrismaClient();
 
 // Get orders by phone number (pseudo-auth for guest checkout)
 export const getCustomerOrders = async (req: Request, res: Response) => {
@@ -61,9 +59,17 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
     const { id } = req.params;
     const { status } = req.body; // e.g. PREPARING, READY
 
+    const updateData: any = { status };
+    
+    if (status === 'OUT_FOR_DELIVERY') {
+      updateData.riderAssignedAt = new Date();
+    } else if (status === 'DELIVERED') {
+      updateData.deliveredAt = new Date();
+    }
+
     const updatedOrder = await prisma.order.update({
       where: { id },
-      data: { status },
+      data: updateData,
       include: { 
         items: {
           include: {

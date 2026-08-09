@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Activity, Users, Store, DollarSign, TrendingUp, BarChart2, Shield } from 'lucide-react';
 import axios from 'axios';
 
@@ -8,7 +9,10 @@ export default function AdminDashboard() {
     totalUsers: 0,
     totalOrders: 0,
     totalRevenue: 0,
-    totalCommissions: 0
+    totalCommissions: 0,
+    revenueTrend: [],
+    topRestaurants: [],
+    topRiders: []
   });
   });
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
@@ -133,6 +137,94 @@ export default function AdminDashboard() {
                 </div>
                 <div style={trendStyle}>
                    <TrendingUp size={16} color="#16a34a" /> <span style={{ color: '#16a34a' }}>+124</span> this week
+                </div>
+              </div>
+
+            </div>
+
+            {/* Platform Analytics Charts */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '2rem', marginBottom: '3rem' }}>
+              
+              {/* Revenue Trend Area Chart */}
+              <div style={{ background: 'white', borderRadius: '24px', padding: '2rem', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}>
+                <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <TrendingUp size={20} color="#38bdf8" /> GMV 7-Day Trend
+                </h2>
+                <div style={{ width: '100%', height: 300 }}>
+                  <ResponsiveContainer>
+                    <AreaChart data={stats.revenueTrend} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="colorGmv" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#38bdf8" stopOpacity={0.3}/>
+                          <stop offset="95%" stopColor="#38bdf8" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                      <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} />
+                      <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} />
+                      <Tooltip 
+                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
+                      />
+                      <Area type="monotone" dataKey="gmv" name="Revenue (₨)" stroke="#38bdf8" strokeWidth={3} fillOpacity={1} fill="url(#colorGmv)" />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+            </div>
+
+            {/* Fleet Performance Leaderboards */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '3rem' }}>
+              
+              {/* Top Restaurants Leaderboard */}
+              <div style={{ background: 'white', borderRadius: '24px', padding: '2rem', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}>
+                <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <Store size={20} color="#f59e0b" /> Top Restaurants
+                </h2>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  {stats.topRestaurants?.map((restaurant: any, index: number) => (
+                    <div key={restaurant.id} style={{ display: 'flex', alignItems: 'center', gap: '1rem', paddingBottom: '1rem', borderBottom: index !== stats.topRestaurants.length -1 ? '1px solid #f1f5f9' : 'none' }}>
+                      <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#f8fafc', color: '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '0.9rem' }}>
+                        {index + 1}
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <h4 style={{ margin: 0, color: '#0f172a', fontWeight: 600, fontSize: '0.95rem' }}>{restaurant.name}</h4>
+                        <p style={{ margin: 0, color: '#64748b', fontSize: '0.8rem' }}>{restaurant.orders} Orders Delivered</p>
+                      </div>
+                      <div style={{ background: '#fef3c7', color: '#d97706', padding: '0.25rem 0.5rem', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 700 }}>
+                        {restaurant.rating.toFixed(1)} ★
+                      </div>
+                    </div>
+                  ))}
+                  {(!stats.topRestaurants || stats.topRestaurants.length === 0) && (
+                    <p style={{ color: '#94a3b8', textAlign: 'center', margin: '2rem 0' }}>No data yet.</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Fleet Performance (Riders) */}
+              <div style={{ background: 'white', borderRadius: '24px', padding: '2rem', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}>
+                <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <Users size={20} color="#8b5cf6" /> Fleet Performance
+                </h2>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  {stats.topRiders?.map((rider: any, index: number) => (
+                    <div key={rider.id} style={{ display: 'flex', alignItems: 'center', gap: '1rem', paddingBottom: '1rem', borderBottom: index !== stats.topRiders.length -1 ? '1px solid #f1f5f9' : 'none' }}>
+                      <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#f8fafc', color: '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '0.9rem' }}>
+                        {index + 1}
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <h4 style={{ margin: 0, color: '#0f172a', fontWeight: 600, fontSize: '0.95rem' }}>{rider.name}</h4>
+                        <p style={{ margin: 0, color: '#64748b', fontSize: '0.8rem' }}>{rider.deliveries} Deliveries • {rider.avgDeliveryTime > 0 ? `${rider.avgDeliveryTime}m avg` : 'N/A'}</p>
+                      </div>
+                      <div style={{ background: '#ede9fe', color: '#7c3aed', padding: '0.25rem 0.5rem', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 700 }}>
+                        {rider.averageRating.toFixed(1)} ★
+                      </div>
+                    </div>
+                  ))}
+                  {(!stats.topRiders || stats.topRiders.length === 0) && (
+                    <p style={{ color: '#94a3b8', textAlign: 'center', margin: '2rem 0' }}>No fleet data yet.</p>
+                  )}
                 </div>
               </div>
 
