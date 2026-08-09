@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
-import { stripeClient } from '../../lib/stripe';
+import { stripeClient } from '../../lib/stripe.js';
+import { getIO } from '../../lib/socket.js';
 import { PrismaClient } from '@prisma/client';
+import { AuditService } from '../../lib/audit.js';
 
 const prisma = new PrismaClient();
 
@@ -50,6 +52,15 @@ export const onboardTenant = async (req: Request, res: Response) => {
         where: { id: tenantId },
         data: { stripeAccountId },
       });
+
+      // Audit Log (QB-706)
+      AuditService.log({
+        action: 'STRIPE_ACCOUNT_CREATED',
+        entity: 'Tenant',
+        entityId: tenantId,
+        ipAddress: req.ip || req.connection.remoteAddress,
+        details: { stripeAccountId }
+      });
     }
 
     // Generate Account Link
@@ -63,6 +74,13 @@ export const onboardTenant = async (req: Request, res: Response) => {
           return_url: `http://localhost:3000/dashboard?accountId=${stripeAccountId}`,
         },
       },
+    });
+
+    AuditService.log({
+      action: 'STRIPE_ONBOARDING_INITIATED',
+      entity: 'Tenant',
+      entityId: tenantId,
+      ipAddress: req.ip || req.connection.remoteAddress
     });
 
     res.json({ url: accountLink.account_onboarding?.url || '' });
@@ -106,7 +124,7 @@ export const createProduct = async (req: Request, res: Response) => {
 // 3. Create Checkout Session (Destination Charge)
 export const createCheckoutSession = async (req: Request, res: Response) => {
   try {
-    const { items, formData } = req.body;
+    const { items, formData, couponCode } = req.body;
     if (!items || items.length === 0) {
       return res.status(400).json({ error: 'Cart is empty' });
     }
@@ -135,15 +153,49 @@ export const createCheckoutSession = async (req: Request, res: Response) => {
       quantity: item.quantity,
     }));
 
-    // Example application fee: 10%
     const subtotal = items.reduce((sum: number, i: any) => sum + (i.totalPrice * i.quantity), 0);
+    
+    // Check Coupon (QB-704)
+    let discountAmount = 0;
+    let stripeCouponId = null;
+
+    if (couponCode) {
+      const coupon = await prisma.coupon.findUnique({ where: { code: couponCode.toUpperCase() } });
+      if (coupon && coupon.isActive && (!coupon.tenantId || coupon.tenantId === tenantId) && subtotal >= coupon.minOrderValue) {
+        if (coupon.discountType === 'PERCENTAGE') {
+          discountAmount = (subtotal * coupon.discountValue) / 100;
+        } else if (coupon.discountType === 'FIXED') {
+          discountAmount = coupon.discountValue;
+        }
+        discountAmount = Math.min(discountAmount, subtotal);
+
+        // Generate Ephemeral Stripe Coupon
+        if (discountAmount > 0) {
+          const stripeCoupon = await stripeClient.coupons.create({
+            amount_off: Math.round(discountAmount * 100), // in cents
+            currency: 'pkr',
+            duration: 'once',
+            name: `${coupon.code} Discount`,
+          });
+          stripeCouponId = stripeCoupon.id;
+        }
+      }
+    }
+
+    const discountedSubtotal = subtotal - discountAmount;
     const DELIVERY_FEE = 150;
     const SERVICE_FEE = 30;
     const TAX_RATE = 0.16;
-    const taxAmount = subtotal * TAX_RATE;
-    const grandTotal = subtotal + DELIVERY_FEE + SERVICE_FEE + taxAmount;
+    const taxAmount = discountedSubtotal * TAX_RATE; // Tax is typically on the discounted amount
+    const grandTotal = discountedSubtotal + DELIVERY_FEE + SERVICE_FEE + taxAmount;
     
-    const applicationFeeInCents = Math.round(subtotal * 0.10 * 100);
+    // Dynamic Commission Engine (QB-702)
+    const commissionRate = tenant.commissionRate || 10.0;
+    const platformCommission = discountedSubtotal * (commissionRate / 100);
+    const tenantEarnings = discountedSubtotal - platformCommission;
+    
+    // Platform keeps Commission + Delivery Fee + Service Fee.
+    const applicationFeeInCents = Math.round((platformCommission + DELIVERY_FEE + SERVICE_FEE) * 100);
 
     // Create Order in DB (PENDING_PAYMENT)
     const order = await prisma.order.create({
@@ -155,10 +207,13 @@ export const createCheckoutSession = async (req: Request, res: Response) => {
         city: formData?.city,
         notes: formData?.notes,
         subtotal,
+        discountAmount,
         deliveryFee: DELIVERY_FEE,
         serviceFee: SERVICE_FEE,
         taxAmount,
         totalAmount: grandTotal,
+        platformCommission,
+        tenantEarnings,
         status: 'PENDING_PAYMENT',
         items: {
           create: items.map((i: any) => ({
@@ -178,7 +233,7 @@ export const createCheckoutSession = async (req: Request, res: Response) => {
       }
     });
 
-    const session = await stripeClient.checkout.sessions.create({
+    const sessionParams: any = {
       line_items,
       payment_intent_data: {
         application_fee_amount: applicationFeeInCents,
@@ -187,12 +242,18 @@ export const createCheckoutSession = async (req: Request, res: Response) => {
         },
       },
       mode: 'payment',
-      success_url: `http://localhost:3000/orders?phone=${formData?.phone || ''}`, // Quick redirect to orders page
+      success_url: `http://localhost:3000/orders?phone=${formData?.phone || ''}`, 
       cancel_url: 'http://localhost:3000/checkout',
       metadata: {
         orderId: order.id,
       },
-    });
+    };
+
+    if (stripeCouponId) {
+      sessionParams.discounts = [{ coupon: stripeCouponId }];
+    }
+
+    const session = await stripeClient.checkout.sessions.create(sessionParams);
 
     // Update Order with Stripe Session ID
     await prisma.order.update({
@@ -203,6 +264,24 @@ export const createCheckoutSession = async (req: Request, res: Response) => {
     res.json({ url: session.url });
   } catch (error: any) {
     console.error('Checkout session error:', error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const generateDashboardLink = async (req: Request, res: Response) => {
+  try {
+    const { tenantId } = req.body;
+    
+    const tenant = await prisma.tenant.findUnique({ where: { id: tenantId } });
+    if (!tenant || !tenant.stripeAccountId) {
+      return res.status(400).json({ error: 'Restaurant is not onboarded with Stripe.' });
+    }
+
+    const loginLink = await stripeClient.accounts.createLoginLink(tenant.stripeAccountId);
+    
+    res.json({ url: loginLink.url });
+  } catch (error: any) {
+    console.error('Dashboard link error:', error);
     res.status(500).json({ error: error.message });
   }
 };
@@ -260,9 +339,10 @@ export const webhookHandler = async (req: Request, res: Response) => {
       });
 
       if (order && order.status === 'PENDING_PAYMENT') {
-        await prisma.order.update({
+        const updatedOrder = await prisma.order.update({
           where: { id: order.id },
-          data: { status: 'PAID' }
+          data: { status: 'PAID' },
+          include: { items: true, statusHistory: true }
         });
 
         await prisma.orderStatusHistory.create({
@@ -272,6 +352,9 @@ export const webhookHandler = async (req: Request, res: Response) => {
             notes: 'Payment confirmed via Stripe webhook'
           }
         });
+
+        // Broadcast to KDS via Socket.io
+        getIO().to(`tenant_${updatedOrder.tenantId}`).emit('order.created', updatedOrder);
       }
     }
 

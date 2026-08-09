@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Package, Clock, CheckCircle, Truck, Utensils } from 'lucide-react';
+import { Search, Package, Clock, CheckCircle, Truck, Utensils, Star, X } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
+import { io, Socket } from 'socket.io-client';
+import Map, { Marker } from 'react-map-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
+
+const MAPBOX_TOKEN = 'pk.YOUR_MAPBOX_PUBLIC_TOKEN_HERE';
 
 export default function CustomerOrders() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -9,6 +14,12 @@ export default function CustomerOrders() {
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [socket, setSocket] = useState<Socket | null>(null);
+  const [riderLocations, setRiderLocations] = useState<Record<string, { lat: number, lng: number }>>({});
+  
+  const [reviewModalOrder, setReviewModalOrder] = useState<any>(null);
+  const [reviewForm, setReviewForm] = useState({ rating: 5, comment: '' });
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
 
   const fetchOrders = async (phoneNumber: string) => {
     if (!phoneNumber) return;
@@ -30,7 +41,41 @@ export default function CustomerOrders() {
     if (initialPhone) {
       fetchOrders(initialPhone);
     }
+
+    const newSocket = io('http://localhost:5000');
+    setSocket(newSocket);
+
+    newSocket.on('connect', () => {
+      console.log('Connected to Customer Orders Socket');
+    });
+
+    newSocket.on('order.updated', (updatedOrder: any) => {
+      setOrders(prev => prev.map(o => o.id === updatedOrder.id ? updatedOrder : o));
+    });
+
+    newSocket.on('rider_location_updated', (data: { lat: number, lng: number }) => {
+      // Assuming 1 active order for MVP, or we can key by order ID if we passed it back
+      setRiderLocations(prev => ({
+        ...prev,
+        latest: { lat: data.lat, lng: data.lng } 
+      }));
+    });
+
+    return () => {
+      newSocket.disconnect();
+    };
   }, []);
+
+  useEffect(() => {
+    // When orders change, join rooms for any active orders
+    if (socket && socket.connected) {
+      orders.forEach(order => {
+        if (order.status !== 'DELIVERED' && order.status !== 'CANCELLED') {
+          socket.emit('join_order_room', order.id);
+        }
+      });
+    }
+  }, [orders, socket]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,6 +91,34 @@ export default function CustomerOrders() {
       case 'OUT_FOR_DELIVERY': return <Truck size={20} className="text-purple-500" />;
       case 'DELIVERED': return <CheckCircle size={20} className="text-green-500" />;
       default: return <Package size={20} />;
+    }
+  };
+
+  const handleReviewSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!reviewModalOrder) return;
+    setIsSubmittingReview(true);
+    
+    try {
+      const res = await fetch(`http://localhost:5000/api/v1/orders/${reviewModalOrder.id}/reviews`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...reviewForm, customerName: reviewModalOrder.customerName })
+      });
+      const data = await res.json();
+      if (data.success) {
+        // Optimistically update order
+        setOrders(prev => prev.map(o => o.id === reviewModalOrder.id ? { ...o, review: data.data } : o));
+        setReviewModalOrder(null);
+        setReviewForm({ rating: 5, comment: '' });
+      } else {
+        alert(data.error || 'Failed to submit review');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Network error submitting review');
+    } finally {
+      setIsSubmittingReview(false);
     }
   };
 
@@ -99,6 +172,56 @@ export default function CustomerOrders() {
                   <span>₨ {(item.price * item.quantity).toFixed(2)}</span>
                 </div>
               ))}
+              <div style={{ paddingLeft: '1.5rem', borderLeft: '2px solid #ff2b5e', marginLeft: '0.5rem', marginTop: '1rem', color: '#64748b' }}>
+                  <p>Order created at {new Date(order.createdAt).toLocaleTimeString()}</p>
+                  
+                  {order.status === 'OUT_FOR_DELIVERY' && riderLocations.latest && (
+                    <div style={{ marginTop: '1rem', padding: '1rem', background: '#eff6ff', borderRadius: '8px', border: '1px solid #bfdbfe' }}>
+                      <p style={{ fontWeight: 700, color: '#1d4ed8', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}>
+                        <Truck size={16} /> Rider is on the way!
+                      </p>
+                      
+                      <div style={{ width: '100%', height: '250px', borderRadius: '8px', overflow: 'hidden' }}>
+                        <Map
+                          initialViewState={{
+                            longitude: riderLocations.latest.lng,
+                            latitude: riderLocations.latest.lat,
+                            zoom: 14
+                          }}
+                          longitude={riderLocations.latest.lng}
+                          latitude={riderLocations.latest.lat}
+                          style={{width: '100%', height: '100%'}}
+                          mapStyle="mapbox://styles/mapbox/streets-v12"
+                          mapboxAccessToken={MAPBOX_TOKEN}
+                        >
+                          <Marker 
+                            longitude={riderLocations.latest.lng} 
+                            latitude={riderLocations.latest.lat} 
+                            anchor="bottom"
+                          >
+                            <div style={{
+                              background: '#ff2b5e',
+                              color: 'white',
+                              borderRadius: '50%',
+                              width: '32px',
+                              height: '32px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              boxShadow: '0 4px 6px rgba(0,0,0,0.3)',
+                              border: '2px solid white'
+                            }}>
+                              <Truck size={16} />
+                            </div>
+                          </Marker>
+                        </Map>
+                      </div>
+                      <p style={{ margin: '8px 0 0 0', fontSize: '0.8rem', color: '#64748b', textAlign: 'center' }}>
+                        Live Mapbox Tracking Enabled
+                      </p>
+                    </div>
+                  )}
+              </div>
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #e2e8f0', paddingTop: '1rem', fontWeight: 800, fontSize: '1.1rem' }}>
@@ -122,9 +245,77 @@ export default function CustomerOrders() {
               </div>
             </div>
 
+            {order.status === 'DELIVERED' && !order.review && (
+              <div style={{ marginTop: '1.5rem', borderTop: '1px solid #e2e8f0', paddingTop: '1.5rem' }}>
+                <button 
+                  onClick={() => setReviewModalOrder(order)}
+                  style={{ width: '100%', padding: '1rem', background: 'white', color: 'var(--primary-color)', border: '2px solid var(--primary-color)', borderRadius: '12px', fontWeight: 700, cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem' }}
+                >
+                  <Star size={18} fill="currentColor" /> Leave a Review
+                </button>
+              </div>
+            )}
+            {order.status === 'DELIVERED' && order.review && (
+              <div style={{ marginTop: '1.5rem', borderTop: '1px solid #e2e8f0', paddingTop: '1.5rem' }}>
+                <div style={{ padding: '1rem', background: '#fef3c7', borderRadius: '12px', border: '1px solid #fde68a' }}>
+                  <p style={{ margin: 0, fontWeight: 700, color: '#d97706', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <Star size={18} fill="currentColor" /> You rated this {order.review.rating}/5 stars
+                  </p>
+                  {order.review.comment && <p style={{ margin: '0.5rem 0 0 0', color: '#92400e', fontSize: '0.9rem' }}>"{order.review.comment}"</p>}
+                </div>
+              </div>
+            )}
+
           </div>
         ))}
       </div>
+
+      {/* Review Modal */}
+      {reviewModalOrder && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, backdropFilter: 'blur(4px)' }}>
+          <div style={{ background: 'white', borderRadius: '24px', padding: '2rem', width: '90%', maxWidth: '400px', position: 'relative' }}>
+            <button 
+              onClick={() => setReviewModalOrder(null)}
+              style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'transparent', border: 'none', cursor: 'pointer', color: '#94a3b8' }}
+            >
+              <X size={24} />
+            </button>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.5rem', color: '#0f172a', textAlign: 'center' }}>How was your food?</h2>
+            <p style={{ textAlign: 'center', color: '#64748b', marginBottom: '1.5rem' }}>{reviewModalOrder.tenant.name}</p>
+            
+            <form onSubmit={handleReviewSubmit}>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Star 
+                    key={star} 
+                    size={36} 
+                    color={star <= reviewForm.rating ? '#fbbf24' : '#e2e8f0'}
+                    fill={star <= reviewForm.rating ? '#fbbf24' : 'transparent'}
+                    style={{ cursor: 'pointer', transition: 'all 0.2s' }}
+                    onClick={() => setReviewForm({ ...reviewForm, rating: star })}
+                  />
+                ))}
+              </div>
+
+              <textarea 
+                value={reviewForm.comment}
+                onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
+                placeholder="What did you like or dislike?"
+                style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0', minHeight: '100px', fontFamily: 'inherit', boxSizing: 'border-box', marginBottom: '1.5rem', background: '#f8fafc' }}
+              ></textarea>
+
+              <button 
+                type="submit"
+                disabled={isSubmittingReview}
+                style={{ width: '100%', padding: '1rem', background: 'var(--primary-color)', color: 'white', border: 'none', borderRadius: '12px', fontWeight: 700, fontSize: '1.1rem', cursor: isSubmittingReview ? 'not-allowed' : 'pointer' }}
+              >
+                {isSubmittingReview ? 'Submitting...' : 'Submit Review'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

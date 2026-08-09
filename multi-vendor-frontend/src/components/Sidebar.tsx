@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Home, Menu, ShoppingBag, Settings, LogOut, UtensilsCrossed } from 'lucide-react';
+import { Home, Menu, ShoppingBag, Settings, LogOut, UtensilsCrossed, Wallet } from 'lucide-react';
 
 export default function Sidebar() {
   const navigate = useNavigate();
@@ -27,6 +27,9 @@ export default function Sidebar() {
         </NavLink>
         <NavLink to="/dashboard/orders" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
           <ShoppingBag size={20} /> Live Orders
+        </NavLink>
+        <NavLink to="/dashboard/wallet" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+          <Wallet size={20} /> Wallet & Payouts
         </NavLink>
         <NavLink to="/dashboard/settings" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
           <Settings size={20} /> Store Settings

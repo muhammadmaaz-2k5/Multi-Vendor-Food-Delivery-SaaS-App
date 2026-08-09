@@ -8,6 +8,9 @@ import CustomerHome from './pages/CustomerHome';
 import CustomerRestaurant from './pages/CustomerRestaurant';
 import CustomerCheckout from './pages/CustomerCheckout';
 import CustomerOrders from './pages/CustomerOrders';
+import AdminDashboard from './pages/AdminDashboard';
+import RestaurantKDS from './pages/RestaurantKDS';
+import RestaurantWallet from './pages/RestaurantWallet';
 import { Provider } from 'react-redux';
 import { store } from './store';
 
@@ -20,8 +23,9 @@ function App() {
         <Route path="/" element={<CustomerLayout />}>
           <Route index element={<CustomerHome />} />
           <Route path="restaurants/:id" element={<CustomerRestaurant />} />
-          <Route path="checkout" element={<CustomerCheckout />} />
-          <Route path="orders" element={<CustomerOrders />} />
+          <Route path="/checkout" element={<CustomerCheckout />} />
+          <Route path="/orders" element={<CustomerOrders />} />
+          <Route path="/admin" element={<AdminDashboard />} />
         </Route>
 
         {/* Auth Routes */}
@@ -30,7 +34,9 @@ function App() {
         <Route path="/register-restaurant" element={<RegisterRestaurant />} />
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<DashboardHome />} />
+          <Route path="wallet" element={<RestaurantWallet />} />
         </Route>
+        <Route path="/kds/:tenantId" element={<RestaurantKDS />} />
       </Routes>
       </BrowserRouter>
     </Provider>

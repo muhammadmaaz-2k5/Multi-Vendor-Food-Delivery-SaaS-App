@@ -41,6 +41,10 @@ model Tenant {
   cuisine            String[] @default([])
   rating             Float    @default(4.5)
   deliveryTime       String   @default("30-45 min")
+  deliveryRadiusKm   Float    @default(5.0)
+  commissionRate     Float    @default(10.0) // Platform commission %
+  lat                Float?
+  lng                Float?
   isActive           Boolean  @default(true)
   verificationStatus String   @default("APPROVED") // PENDING, UNDER_REVIEW, APPROVED, REJECTED
 
@@ -57,8 +61,12 @@ model Tenant {
   menuCategories MenuCategory[]
   menuItems      MenuItem[]
 
-  // Orders
   orders         Order[]
+  coupons        Coupon[]
+  reviews        Review[]
+
+  // Inventory
+  ingredients    Ingredient[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -121,9 +129,18 @@ model Customer {
 }
 
 model Rider {
-  id     String @id @default(uuid())
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id])
+  id         String   @id @default(uuid())
+  userId     String   @unique
+  user       User     @relation(fields: [userId], references: [id])
+  
+  isOnline   Boolean  @default(false)
+  currentLat Float?
+  currentLng Float?
+
+  orders     Order[]
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model Branch {
@@ -168,8 +185,9 @@ model MenuItem {
   // Stripe Integration
   stripeProductId String?
 
-  modifierGroups ModifierGroup[]
-  orderItems     OrderItem[]
+  modifierGroups    ModifierGroup[]
+  orderItems        OrderItem[]
+  recipeIngredients RecipeIngredient[]
 
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
@@ -220,16 +238,27 @@ model Order {
   notes           String?
 
   status          String   @default("PENDING_PAYMENT") // PENDING_PAYMENT, PAID, RESTAURANT_ACCEPTED, PREPARING, READY, OUT_FOR_DELIVERY, DELIVERED, CANCELLED
-  stripeSessionId String?  @unique
+  
+  riderId         String?
+  rider           Rider?   @relation(fields: [riderId], references: [id])
 
   subtotal        Float
   deliveryFee     Float
   serviceFee      Float
   taxAmount       Float
+  discountAmount  Float    @default(0.0)
   totalAmount     Float
 
   items           OrderItem[]
+
+  // Commission Tracking
+  platformCommission Float @default(0.0)
+  tenantEarnings     Float @default(0.0)
+
+  // Payment Tracking
+  stripeSessionId String?  @unique
   statusHistory   OrderStatusHistory[]
+  review          Review?
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -260,5 +289,78 @@ model OrderStatusHistory {
   notes     String?
 
   createdAt DateTime @default(now())
+}
+
+model Coupon {
+  id             String   @id @default(uuid())
+  code           String   @unique
+  discountType   String   // PERCENTAGE, FIXED
+  discountValue  Float
+  minOrderValue  Float    @default(0.0)
+  isActive       Boolean  @default(true)
+  
+  tenantId       String?
+  tenant         Tenant?  @relation(fields: [tenantId], references: [id])
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Review {
+  id             String   @id @default(uuid())
+  rating         Int
+  comment        String?
+  customerName   String
+
+  orderId        String   @unique
+  order          Order    @relation(fields: [orderId], references: [id])
+  
+  tenantId       String
+  tenant         Tenant   @relation(fields: [tenantId], references: [id])
+
+  createdAt      DateTime @default(now())
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  action      String
+  entity      String
+  entityId    String?
+  userId      String?
+  ipAddress   String?
+  details     Json?
+  
+  createdAt   DateTime @default(now())
+}
+
+// -----------------------------------------------------------------------------
+// INVENTORY MANAGEMENT
+// -----------------------------------------------------------------------------
+model Ingredient {
+  id                String   @id @default(uuid())
+  tenantId          String
+  tenant            Tenant   @relation(fields: [tenantId], references: [id])
+  name              String
+  unit              String   // e.g., 'pieces', 'kg', 'liters'
+  currentStock      Float    @default(0)
+  lowStockThreshold Float    @default(10)
+
+  recipeIngredients RecipeIngredient[]
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model RecipeIngredient {
+  id               String     @id @default(uuid())
+  menuItemId       String
+  menuItem         MenuItem   @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+  ingredientId     String
+  ingredient       Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+  
+  quantityRequired Float      // How much of the ingredient is needed for 1 unit of the MenuItem
+
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
 }
 

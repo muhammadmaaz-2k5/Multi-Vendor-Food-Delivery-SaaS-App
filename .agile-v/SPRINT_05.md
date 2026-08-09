@@ -3,18 +3,18 @@
 **Sprint Goal:** Provide restaurants with a Kitchen Display System (KDS) and implement Socket.io for real-time, instant order updates across the platform.
 
 **Duration:** 2 Weeks  
-**Status:** ⏳ UPCOMING
+**Status:** 🔄 IN PROGRESS
 
 ## 📋 Sprint Backlog
 
 | Task ID | Description | Assignee | Status | Story Points |
 | :--- | :--- | :--- | :--- | :--- |
-| **QB-501** | Kitchen Display System (KDS) UI (Kanban columns) | TBD | 📝 To Do | 8 |
-| **QB-502** | Socket.io Server Setup & Authentication | TBD | 📝 To Do | 5 |
-| **QB-503** | Real-time event broadcasting (`order.created`, etc.) | TBD | 📝 To Do | 5 |
-| **QB-504** | Kitchen Timer Logic (Estimated vs. Elapsed Time) | TBD | 📝 To Do | 5 |
-| **QB-505** | Ingredient-based Inventory deduction hooks | TBD | 📝 To Do | 5 |
-| **QB-506** | Notification Service (Email/In-App for customers) | TBD | 📝 To Do | 3 |
+| **QB-501** | Kitchen Display System (KDS) UI (Kanban columns) | TBD | ✅ Done | 8 |
+| **QB-502** | Socket.io Server Setup & Authentication | TBD | ✅ Done | 5 |
+| **QB-503** | Real-time event broadcasting (`order.created`, etc.) | TBD | ✅ Done | 5 |
+| **QB-504** | Kitchen Timer Logic (Estimated vs. Elapsed Time) | TBD | ✅ Done | 5 |
+| **QB-505** | Ingredient-based Inventory deduction hooks | TBD | ✅ Done | 5 |
+| **QB-506** | Notification Service (Email/In-App for customers) | TBD | ✅ Done | 3 |
 
 ## 🛑 Blockers / Risks
 - Managing WebSocket connections securely and efficiently across multiple tenants.

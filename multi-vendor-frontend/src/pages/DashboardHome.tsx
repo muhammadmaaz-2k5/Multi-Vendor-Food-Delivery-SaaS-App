@@ -54,6 +54,28 @@ export default function DashboardHome() {
           <p>No orders yet today. You're all caught up!</p>
         </div>
       </div>
+
+      <div className="glass-container" style={{ padding: '2rem', background: 'white', marginTop: '2rem', animation: 'fadeIn 0.8s ease-out' }}>
+        <h2 style={{ fontSize: '1.25rem', marginBottom: '1rem', fontWeight: 600 }}>Delivery Zone Configuration (QB-606)</h2>
+        <p style={{ color: 'var(--text-light)', marginBottom: '1.5rem' }}>
+          Configure your maximum delivery radius. Riders will only be assigned to orders within this zone.
+        </p>
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          <div style={{ flex: 1 }}>
+            <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.5rem' }}>
+              Maximum Delivery Radius (km)
+            </label>
+            <input 
+              type="number" 
+              defaultValue={restaurant?.deliveryRadiusKm || 5} 
+              style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}
+            />
+          </div>
+          <button style={{ marginTop: '1.5rem', background: 'var(--primary-color)', color: 'white', padding: '0.75rem 2rem', borderRadius: '8px', fontWeight: 600, border: 'none', cursor: 'pointer' }}>
+            Save Settings
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Star, Clock, Info } from 'lucide-react';
+import { Star, Clock, Info, MessageSquare } from 'lucide-react';
 import { API_URL } from '../lib/api';
 import ItemModal from '../components/ItemModal';
 
@@ -10,6 +10,22 @@ export default function CustomerRestaurant() {
   const [isLoading, setIsLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState<string>('');
   const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [reviews, setReviews] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const res = await fetch(`${API_URL}/restaurants/${id}/reviews`);
+        const data = await res.json();
+        if (data.success) {
+          setReviews(data.data);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    if (id) fetchReviews();
+  }, [id]);
 
   useEffect(() => {
     const fetchRestaurant = async () => {
@@ -83,6 +99,15 @@ export default function CustomerRestaurant() {
                 {category.name}
               </a>
             ))}
+            {reviews.length > 0 && (
+              <a 
+                href="#reviews"
+                className={`menu-sidebar-link ${activeCategory === 'reviews' ? 'active' : ''}`}
+                onClick={() => setActiveCategory('reviews')}
+              >
+                Reviews
+              </a>
+            )}
           </nav>
         </aside>
 
@@ -115,6 +140,37 @@ export default function CustomerRestaurant() {
               </div>
             </div>
           ))}
+
+          {reviews.length > 0 && (
+            <div id="reviews" className="menu-category-section" style={{ marginTop: '3rem', borderTop: '1px solid #e2e8f0', paddingTop: '2rem' }}>
+              <h2 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '1.5rem', color: 'var(--text-color)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <MessageSquare size={28} color="var(--primary-color)" /> Customer Reviews
+              </h2>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
+                {reviews.map(review => (
+                  <div key={review.id} style={{ background: 'white', padding: '1.5rem', borderRadius: '16px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', border: '1px solid #f1f5f9' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+                      <div>
+                        <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#0f172a' }}>{review.customerName}</h4>
+                        <p style={{ margin: 0, fontSize: '0.8rem', color: '#94a3b8' }}>{new Date(review.createdAt).toLocaleDateString()}</p>
+                      </div>
+                      <div style={{ display: 'flex', gap: '2px' }}>
+                        {[1, 2, 3, 4, 5].map(star => (
+                          <Star key={star} size={14} fill={star <= review.rating ? '#fbbf24' : '#e2e8f0'} color={star <= review.rating ? '#fbbf24' : '#e2e8f0'} />
+                        ))}
+                      </div>
+                    </div>
+                    {review.comment ? (
+                      <p style={{ margin: 0, color: '#475569', fontSize: '0.95rem', fontStyle: 'italic', lineHeight: 1.5 }}>"{review.comment}"</p>
+                    ) : (
+                      <p style={{ margin: 0, color: '#cbd5e1', fontSize: '0.9rem', fontStyle: 'italic' }}>No comment provided.</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </main>
       </div>
 

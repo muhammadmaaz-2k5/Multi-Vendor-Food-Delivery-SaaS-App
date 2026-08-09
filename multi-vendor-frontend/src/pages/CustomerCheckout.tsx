@@ -5,11 +5,19 @@ import { MapPin, CreditCard, ChevronRight } from 'lucide-react';
 export default function CustomerCheckout() {
   const { items, cartTotal } = useAppSelector(state => state.cart);
 
+  const [couponCodeInput, setCouponCodeInput] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
+  const [couponError, setCouponError] = useState('');
+  const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
+
+  const discountAmount = appliedCoupon ? appliedCoupon.discountAmount : 0;
+  const discountedSubtotal = cartTotal - discountAmount;
+
   const DELIVERY_FEE = 150;
   const SERVICE_FEE = 30;
   const TAX_RATE = 0.16;
-  const taxAmount = cartTotal * TAX_RATE;
-  const grandTotal = cartTotal + DELIVERY_FEE + SERVICE_FEE + taxAmount;
+  const taxAmount = discountedSubtotal * TAX_RATE;
+  const grandTotal = discountedSubtotal + DELIVERY_FEE + SERVICE_FEE + taxAmount;
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -37,7 +45,7 @@ export default function CustomerCheckout() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ items, formData }),
+        body: JSON.stringify({ items, formData, couponCode: appliedCoupon?.code }),
       });
 
       const data = await response.json();
@@ -149,10 +157,78 @@ export default function CustomerCheckout() {
           </div>
 
           <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.95rem', color: 'var(--text-light)' }}>
+            
+            {/* Promo Code Section */}
+            <div style={{ marginBottom: '1rem', paddingBottom: '1rem', borderBottom: '1px dashed #e2e8f0' }}>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.5rem', color: '#1e293b' }}>Have a promo code?</label>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <input 
+                  type="text" 
+                  value={couponCodeInput}
+                  onChange={(e) => setCouponCodeInput(e.target.value)}
+                  placeholder="e.g. WELCOME10"
+                  className="search-input"
+                  style={{ flex: 1, padding: '0.5rem', boxSizing: 'border-box' }}
+                  disabled={!!appliedCoupon || isValidatingCoupon}
+                />
+                {!appliedCoupon ? (
+                  <button 
+                    type="button"
+                    onClick={async () => {
+                      if (!couponCodeInput) return;
+                      setIsValidatingCoupon(true);
+                      setCouponError('');
+                      try {
+                        const response = await fetch('http://localhost:5000/api/orders/validate-coupon', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({
+                            code: couponCodeInput,
+                            subtotal: cartTotal,
+                            tenantId: items[0]?.tenantId
+                          }),
+                        });
+                        const data = await response.json();
+                        if (data.success) {
+                          setAppliedCoupon(data.data);
+                        } else {
+                          setCouponError(data.error || 'Invalid coupon');
+                        }
+                      } catch (err) {
+                        setCouponError('Network error');
+                      } finally {
+                        setIsValidatingCoupon(false);
+                      }
+                    }}
+                    disabled={isValidatingCoupon}
+                    style={{ padding: '0 1rem', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}
+                  >
+                    Apply
+                  </button>
+                ) : (
+                  <button 
+                    type="button"
+                    onClick={() => { setAppliedCoupon(null); setCouponCodeInput(''); }}
+                    style={{ padding: '0 1rem', background: '#ef4444', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
+              {couponError && <div style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '0.5rem' }}>{couponError}</div>}
+              {appliedCoupon && <div style={{ color: '#10b981', fontSize: '0.8rem', marginTop: '0.5rem', fontWeight: 600 }}>Discount applied successfully!</div>}
+            </div>
+
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span>Subtotal</span>
               <span>₨ {cartTotal.toFixed(2)}</span>
             </div>
+            {discountAmount > 0 && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', color: '#10b981', fontWeight: 600 }}>
+                <span>Discount ({appliedCoupon.code})</span>
+                <span>- ₨ {discountAmount.toFixed(2)}</span>
+              </div>
+            )}
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span>Delivery Fee</span>
               <span>₨ {DELIVERY_FEE.toFixed(2)}</span>
