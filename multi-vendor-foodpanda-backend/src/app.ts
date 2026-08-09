@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import { errorHandler } from './middlewares/error.middleware.js';
 import authRoutes from './modules/auth/auth.routes.js';
+import restaurantRoutes from './modules/restaurant/restaurant.routes.js';
 
 const app = express();
 
@@ -13,6 +14,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/restaurants', restaurantRoutes);
 
 // Error Handling
 app.use(errorHandler);

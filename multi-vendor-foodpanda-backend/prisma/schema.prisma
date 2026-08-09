@@ -46,6 +46,10 @@ model Tenant {
   roles     Role[] // Tenant-specific custom roles (optional)
   userRoles UserRole[]
 
+  // Menu relations
+  menuCategories MenuCategory[]
+  menuItems      MenuItem[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -117,4 +121,71 @@ model Branch {
   tenantId String
   tenant   Tenant @relation(fields: [tenantId], references: [id])
   name     String
+}
+
+// -----------------------------------------------------------------------------
+// MENU & CATALOG
+// -----------------------------------------------------------------------------
+model MenuCategory {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+
+  menuItems   MenuItem[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model MenuItem {
+  id             String       @id @default(uuid())
+  tenantId       String
+  tenant         Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  menuCategoryId String
+  category       MenuCategory @relation(fields: [menuCategoryId], references: [id], onDelete: Cascade)
+
+  name           String
+  description    String?
+  price          Float
+  image          String?      // S3 URL
+  isActive       Boolean      @default(true)
+  isAvailable    Boolean      @default(true)
+
+  modifierGroups ModifierGroup[]
+
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model ModifierGroup {
+  id          String   @id @default(uuid())
+  menuItemId  String
+  menuItem    MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+  
+  name        String   // e.g., "Choose your Size"
+  isRequired  Boolean  @default(false)
+  minSelection Int     @default(0)
+  maxSelection Int?    // null = unlimited
+
+  options     ModifierOption[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ModifierOption {
+  id              String        @id @default(uuid())
+  modifierGroupId String
+  modifierGroup   ModifierGroup @relation(fields: [modifierGroupId], references: [id], onDelete: Cascade)
+
+  name            String        
+  price           Float         @default(0) 
+  isAvailable     Boolean       @default(true)
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 }
