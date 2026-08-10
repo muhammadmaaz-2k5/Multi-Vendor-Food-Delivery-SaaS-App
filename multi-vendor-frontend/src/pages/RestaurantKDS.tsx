@@ -50,13 +50,13 @@ export default function RestaurantKDS() {
 
   useEffect(() => {
     // 1. Initial Load
-    fetch(`http://localhost:5000/api/v1/orders/tenant/${tenantId}`)
+    fetch(`https://multi-vendor-food-delivery-saa-s-ap.vercel.app/api/v1/orders/tenant/${tenantId}`)
       .then(res => res.json())
       .then(data => setOrders(data))
       .catch(err => console.error('Error fetching KDS orders:', err));
 
     // 2. Socket Connection
-    const newSocket = io('http://localhost:5000');
+    const newSocket = io('https://multi-vendor-food-delivery-saa-s-ap.vercel.app');
     setSocket(newSocket);
 
     newSocket.on('connect', () => {
@@ -85,7 +85,7 @@ export default function RestaurantKDS() {
 
   const updateStatus = async (orderId: string, newStatus: string) => {
     try {
-      await fetch(`http://localhost:5000/api/v1/orders/${orderId}/status`, {
+      await fetch(`https://multi-vendor-food-delivery-saa-s-ap.vercel.app/api/v1/orders/${orderId}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus })

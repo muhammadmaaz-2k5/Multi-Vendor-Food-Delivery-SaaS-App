@@ -40,7 +40,7 @@ export default function CustomerCheckout() {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:5000/api/payments/create-checkout-session', {
+      const response = await fetch('https://multi-vendor-food-delivery-saa-s-ap.vercel.app/api/payments/create-checkout-session', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -181,7 +181,7 @@ export default function CustomerCheckout() {
                       setIsValidatingCoupon(true);
                       setCouponError('');
                       try {
-                        const response = await fetch('http://localhost:5000/api/orders/validate-coupon', {
+                        const response = await fetch('https://multi-vendor-food-delivery-saa-s-ap.vercel.app/api/orders/validate-coupon', {
                           method: 'POST',
                           headers: { 'Content-Type': 'application/json' },
                           body: JSON.stringify({

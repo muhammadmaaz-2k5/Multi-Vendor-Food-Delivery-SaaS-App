@@ -25,8 +25,8 @@ export default function AdminDashboard() {
   const fetchStats = async () => {
     try {
       const [statsRes, logsRes] = await Promise.all([
-        axios.get('http://localhost:5000/api/v1/admin/stats'),
-        axios.get('http://localhost:5000/api/v1/admin/audit-logs')
+        axios.get('https://multi-vendor-food-delivery-saa-s-ap.vercel.app/api/v1/admin/stats'),
+        axios.get('https://multi-vendor-food-delivery-saa-s-ap.vercel.app/api/v1/admin/audit-logs')
       ]);
       
       if (statsRes.data.success) setStats(statsRes.data.data);

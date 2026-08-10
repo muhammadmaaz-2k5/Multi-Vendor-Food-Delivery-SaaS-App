@@ -18,7 +18,7 @@ export default function DashboardHome() {
   const fetchAnalytics = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get(`http://localhost:5000/api/v1/restaurants/${restaurant.id}/analytics`, {
+      const res = await axios.get(`https://multi-vendor-food-delivery-saa-s-ap.vercel.app/api/v1/restaurants/${restaurant.id}/analytics`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.data.success) {

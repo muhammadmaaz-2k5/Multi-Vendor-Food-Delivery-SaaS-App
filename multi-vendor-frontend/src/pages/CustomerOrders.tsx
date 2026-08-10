@@ -26,7 +26,7 @@ export default function CustomerOrders() {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch(`http://localhost:5000/api/v1/orders/customer/${phoneNumber}`);
+      const res = await fetch(`https://multi-vendor-food-delivery-saa-s-ap.vercel.app/api/v1/orders/customer/${phoneNumber}`);
       if (!res.ok) throw new Error('Failed to fetch orders');
       const data = await res.json();
       setOrders(data);
@@ -42,7 +42,7 @@ export default function CustomerOrders() {
       fetchOrders(initialPhone);
     }
 
-    const newSocket = io('http://localhost:5000');
+    const newSocket = io('https://multi-vendor-food-delivery-saa-s-ap.vercel.app');
     setSocket(newSocket);
 
     newSocket.on('connect', () => {
@@ -100,7 +100,7 @@ export default function CustomerOrders() {
     setIsSubmittingReview(true);
     
     try {
-      const res = await fetch(`http://localhost:5000/api/v1/orders/${reviewModalOrder.id}/reviews`, {
+      const res = await fetch(`https://multi-vendor-food-delivery-saa-s-ap.vercel.app/api/v1/orders/${reviewModalOrder.id}/reviews`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...reviewForm, customerName: reviewModalOrder.customerName })
