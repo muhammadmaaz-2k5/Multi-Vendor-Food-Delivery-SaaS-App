@@ -37,6 +37,9 @@ app.use('/api/v1/orders', ordersRoutes);
 app.use('/api/v1/riders', ridersRoutes);
 app.use('/api/v1/admin', adminRoutes);
 
+app.get('/', (req,res)=>{
+  res.json({message: 'Welcome to FoodPanda API'})
+})
 // Error Handling
 app.use(errorHandler);
 
