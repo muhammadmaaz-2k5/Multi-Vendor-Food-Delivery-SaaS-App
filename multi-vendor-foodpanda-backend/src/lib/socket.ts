@@ -3,9 +3,9 @@ const { Server: SocketIOServer } = require('socket.io');
 const { Server: HttpServer } = require('http');
 
 
-let io: SocketIOServer;
+let io: any;
 
-const initSocket = (server: HttpServer) => {
+const initSocket = (server: any) => {
   io = new SocketIOServer(server, {
     cors: {
       origin: 'http://localhost:3000', // Frontend URL
@@ -13,7 +13,7 @@ const initSocket = (server: HttpServer) => {
     }
   });
 
-  io.on('connection', (socket) => {
+  io.on('connection', (socket: any) => {
     console.log('New client connected:', socket.id);
 
     // Restaurants will join a specific room for their tenantId

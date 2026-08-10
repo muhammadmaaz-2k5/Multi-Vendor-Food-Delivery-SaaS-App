@@ -64,7 +64,7 @@ const getMyRestaurants = async (req: Request, res: Response, next: NextFunction)
       include: { tenant: true, role: true },
     });
 
-    const restaurants = userRoles.map(ur => ({
+    const restaurants = userRoles.map((ur: any) => ({
       ...ur.tenant,
       role: ur.role.name,
     }));
@@ -193,19 +193,19 @@ const getAnalytics = async (req: Request, res: Response, next: NextFunction): Pr
     });
 
     const totalOrders = deliveredOrders.length;
-    const totalRevenue = deliveredOrders.reduce((sum, order) => sum + order.totalAmount, 0);
+    const totalRevenue = deliveredOrders.reduce((sum: any, order: any) => sum + order.totalAmount, 0);
     const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
 
     // Calculate top products
     const productCounts: Record<string, { name: string, quantity: number, revenue: number }> = {};
     
-    deliveredOrders.forEach(order => {
-      order.items.forEach(item => {
+    deliveredOrders.forEach((order: any) => {
+      order.items.forEach((item: any) => {
         if (!productCounts[item.id]) {
           productCounts[item.id] = { name: item.name, quantity: 0, revenue: 0 };
         }
-        productCounts[item.id].quantity += item.quantity;
-        productCounts[item.id].revenue += (item.price * item.quantity);
+        productCounts[item.id]!.quantity += item.quantity;
+        productCounts[item.id]!.revenue += (item.price * item.quantity);
       });
     });
 

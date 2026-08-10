@@ -1,8 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
-const { ZodObject, ZodError } = require('zod');
+const { ZodError } = require('zod');
 
-
-const validateRequest = (schema: ZodObject<any>) => {
+const validateRequest = (schema: any) => {
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       await schema.parseAsync({
@@ -25,4 +24,3 @@ const validateRequest = (schema: ZodObject<any>) => {
   };
 };
 exports.validateRequest = validateRequest;
-

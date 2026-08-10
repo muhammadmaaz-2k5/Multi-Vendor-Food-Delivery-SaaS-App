@@ -34,9 +34,9 @@ const createMenuItem = async (req: Request, res: Response, next: NextFunction): 
     const { name, description, price, isActive, isAvailable } = req.body;
     let imageUrl = null;
 
-    if (req.file) {
+    if ((req as any).file) {
       try {
-        imageUrl = await uploadImageToCloudinary(req.file, `tenants/${tenantId}/items`);
+        imageUrl = await uploadImageToCloudinary((req as any).file, `tenants/${tenantId}/items`);
       } catch (err: any) {
         console.error('Cloudinary Upload Failed (Will continue without image):', err.message);
       }
@@ -95,9 +95,9 @@ const updateMenuItem = async (req: Request, res: Response, next: NextFunction): 
 
     const dataToUpdate = { ...req.body };
 
-    if (req.file) {
+    if ((req as any).file) {
       try {
-        const imageUrl = await uploadImageToCloudinary(req.file, `tenants/${tenantId}/items`);
+        const imageUrl = await uploadImageToCloudinary((req as any).file, `tenants/${tenantId}/items`);
         dataToUpdate.image = imageUrl;
       } catch (err: any) {
         console.error('Cloudinary Upload Failed:', err.message);

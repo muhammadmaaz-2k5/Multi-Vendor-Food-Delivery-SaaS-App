@@ -42,7 +42,7 @@ const getGlobalStats = async (req: Request, res: Response) => {
       revenueByDay[dateStr] = { date: dateStr, gmv: 0, commission: 0 };
     }
 
-    recentOrders.forEach(order => {
+    recentOrders.forEach((order: any) => {
       const dateStr = new Date(order.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
       if (revenueByDay[dateStr]) {
         revenueByDay[dateStr].gmv += order.totalAmount;
@@ -67,7 +67,7 @@ const getGlobalStats = async (req: Request, res: Response) => {
       }
     });
 
-    const topRestaurants = topRestaurantsRaw.map(t => ({
+    const topRestaurants = topRestaurantsRaw.map((t: any) => ({
       id: t.id,
       name: t.name,
       orders: t._count.orders,
@@ -94,10 +94,10 @@ const getGlobalStats = async (req: Request, res: Response) => {
       }
     });
 
-    const topRiders = topRidersRaw.map(r => {
+    const topRiders = topRidersRaw.map((r: any) => {
       // Calculate average delivery time in minutes
       let totalMinutes = 0;
-      r.orders.forEach(o => {
+      r.orders.forEach((o: any) => {
         if (o.deliveredAt && o.riderAssignedAt) {
           totalMinutes += (new Date(o.deliveredAt).getTime() - new Date(o.riderAssignedAt).getTime()) / 60000;
         }

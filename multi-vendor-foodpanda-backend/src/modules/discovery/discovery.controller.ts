@@ -112,7 +112,7 @@ const getRecommendations = async (req: Request, res: Response, next: NextFunctio
         take: 8,
       });
 
-      const sorted = trending.sort((a, b) => b._count.orders - a._count.orders);
+      const sorted = trending.sort((a: any, b: any) => b._count.orders - a._count.orders);
       res.status(200).json({ success: true, type: 'trending', data: sorted });
       return;
     }
@@ -146,16 +146,16 @@ const getRecommendations = async (req: Request, res: Response, next: NextFunctio
     const cuisineScores: Record<string, number> = {};
     const orderedRestaurantIds = new Set<string>();
 
-    pastOrders.forEach(order => {
+    pastOrders.forEach((order: any) => {
       orderedRestaurantIds.add(order.tenantId);
-      order.tenant.cuisine.forEach(tag => {
+      order.tenant.cuisine.forEach((tag: any) => {
         cuisineScores[tag] = (cuisineScores[tag] || 0) + 1;
       });
     });
 
     // Get top 3 preferred cuisine tags
     const topCuisines = Object.entries(cuisineScores)
-      .sort((a, b) => b[1] - a[1])
+      .sort((a: any, b: any) => b[1] - a[1])
       .slice(0, 3)
       .map(([tag]) => tag);
 
@@ -175,10 +175,10 @@ const getRecommendations = async (req: Request, res: Response, next: NextFunctio
     });
 
     // Score candidates: unvisited restaurants rank higher
-    const scored = allCandidates.map(r => ({
+    const scored = allCandidates.map((r: any) => ({
       ...r,
       score: (orderedRestaurantIds.has(r.id) ? 0 : 10) + r.rating,
-    })).sort((a, b) => b.score - a.score).slice(0, 8);
+    })).sort((a: any, b: any) => b.score - a.score).slice(0, 8);
 
     res.status(200).json({
       success: true,
