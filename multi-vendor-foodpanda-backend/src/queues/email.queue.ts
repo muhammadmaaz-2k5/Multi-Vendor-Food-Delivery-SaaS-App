@@ -6,6 +6,9 @@ const { redis } = require('../config/redis');
 const emailQueue = new Queue('EmailQueue', {
   connection: redis,
 });
+emailQueue.on('error', (err: any) => {
+  console.error('EmailQueue Redis Error:', err.message);
+});
 exports.emailQueue = emailQueue;
 
 

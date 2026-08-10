@@ -20,13 +20,15 @@ const emailWorker = new Worker(
   },
   { connection: redis }
 );
+emailWorker.on('error', (err: any) => {
+  console.error('EmailWorker Redis Error:', err.message);
+});
 exports.emailWorker = emailWorker;
 
-
-emailWorker.on('completed', (job) => {
+emailWorker.on('completed', (job: any) => {
   console.log(`✅ Job ${job.id} has completed!`);
 });
 
-emailWorker.on('failed', (job, err) => {
+emailWorker.on('failed', (job: any, err: any) => {
   console.error(`❌ Job ${job?.id} has failed with ${err.message}`);
 });
