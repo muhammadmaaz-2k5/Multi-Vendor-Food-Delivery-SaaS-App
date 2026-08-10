@@ -1,7 +1,9 @@
-import { Request, Response } from 'express';
-import { prisma } from '../../config/prisma.js';
+import type { Request, Response } from 'express';
 
-export const getGlobalStats = async (req: Request, res: Response) => {
+const { prisma } = require('../../config/prisma');
+
+
+const getGlobalStats = async (req: Request, res: Response) => {
   try {
     const totalRestaurants = await prisma.tenant.count();
     const totalUsers = await prisma.user.count();
@@ -129,8 +131,10 @@ export const getGlobalStats = async (req: Request, res: Response) => {
     res.status(500).json({ error: error.message });
   }
 };
+exports.getGlobalStats = getGlobalStats;
 
-export const getAuditLogs = async (req: Request, res: Response): Promise<void> => {
+
+const getAuditLogs = async (req: Request, res: Response): Promise<void> => {
   try {
     const logs = await prisma.auditLog.findMany({
       orderBy: { createdAt: 'desc' },
@@ -146,3 +150,5 @@ export const getAuditLogs = async (req: Request, res: Response): Promise<void> =
     res.status(500).json({ error: error.message });
   }
 };
+exports.getAuditLogs = getAuditLogs;
+

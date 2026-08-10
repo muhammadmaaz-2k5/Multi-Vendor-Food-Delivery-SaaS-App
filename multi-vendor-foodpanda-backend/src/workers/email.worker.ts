@@ -1,7 +1,10 @@
-import { Worker, Job } from 'bullmq';
-import { redis } from '../config/redis.js';
+import type { Job } from 'bullmq';
+const { Worker } = require('bullmq');
 
-export const emailWorker = new Worker(
+const { redis } = require('../config/redis');
+
+
+const emailWorker = new Worker(
   'EmailQueue',
   async (job: Job) => {
     switch (job.name) {
@@ -17,6 +20,8 @@ export const emailWorker = new Worker(
   },
   { connection: redis }
 );
+exports.emailWorker = emailWorker;
+
 
 emailWorker.on('completed', (job) => {
   console.log(`✅ Job ${job.id} has completed!`);

@@ -1,7 +1,8 @@
 import type { Request, Response, NextFunction } from 'express';
-import { prisma } from '../../config/prisma.js';
+const { prisma } = require('../../config/prisma');
 
-export const getRestaurants = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+
+const getRestaurants = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { search, cuisine } = req.query;
 
@@ -45,8 +46,10 @@ export const getRestaurants = async (req: Request, res: Response, next: NextFunc
     next(error);
   }
 };
+exports.getRestaurants = getRestaurants;
 
-export const getRestaurantById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+
+const getRestaurantById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { id } = req.params;
 
@@ -88,9 +91,11 @@ export const getRestaurantById = async (req: Request, res: Response, next: NextF
     next(error);
   }
 };
+exports.getRestaurantById = getRestaurantById;
+
 
 // ─── AI Recommendation Engine (QB-804) ──────────────────────────────────────
-export const getRecommendations = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+const getRecommendations = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { phone } = req.query;
 
@@ -185,3 +190,5 @@ export const getRecommendations = async (req: Request, res: Response, next: Next
     next(error);
   }
 };
+exports.getRecommendations = getRecommendations;
+

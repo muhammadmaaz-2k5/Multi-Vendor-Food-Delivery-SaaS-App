@@ -1,5 +1,7 @@
-import { Router } from 'express';
-import { getGlobalStats, getAuditLogs } from './admin.controller.js';
+const { Router } = require('express');
+
+const { getGlobalStats, getAuditLogs } = require('./admin.controller');
+
 
 const router = Router();
 
@@ -7,4 +9,4 @@ const router = Router();
 router.get('/stats', getGlobalStats);
 router.get('/audit-logs', getAuditLogs);
 
-export default router;
+module.exports = router;

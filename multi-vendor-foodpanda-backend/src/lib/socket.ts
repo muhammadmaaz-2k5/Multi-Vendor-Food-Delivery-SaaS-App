@@ -1,9 +1,11 @@
-import { Server as SocketIOServer } from 'socket.io';
-import { Server as HttpServer } from 'http';
+const { Server: SocketIOServer } = require('socket.io');
+
+const { Server: HttpServer } = require('http');
+
 
 let io: SocketIOServer;
 
-export const initSocket = (server: HttpServer) => {
+const initSocket = (server: HttpServer) => {
   io = new SocketIOServer(server, {
     cors: {
       origin: 'http://localhost:3000', // Frontend URL
@@ -57,10 +59,14 @@ export const initSocket = (server: HttpServer) => {
 
   return io;
 };
+exports.initSocket = initSocket;
 
-export const getIO = () => {
+
+const getIO = () => {
   if (!io) {
     throw new Error('Socket.io not initialized!');
   }
   return io;
 };
+exports.getIO = getIO;
+

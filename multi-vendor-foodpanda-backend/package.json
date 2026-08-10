@@ -29,7 +29,7 @@
   ],
   "author": "Muhammad Maaz",
   "license": "MIT",
-  "type": "module",
+  "type": "commonjs",
   "dependencies": {
     "@prisma/client": "^7.9.1",
     "bcrypt": "^6.0.0",

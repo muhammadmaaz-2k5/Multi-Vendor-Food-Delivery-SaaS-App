@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
-import { prisma } from '../../config/prisma.js';
+const { prisma } = require('../../config/prisma');
+
 
 // Helper to check if user has access to this tenant
 const checkTenantAccess = async (userId: string, tenantId: string) => {
@@ -11,7 +12,7 @@ const checkTenantAccess = async (userId: string, tenantId: string) => {
   }
 };
 
-export const createCategory = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+const createCategory = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const tenantId = req.params.tenantId as string;
     const userId = (req as any).user.id;
@@ -39,8 +40,10 @@ export const createCategory = async (req: Request, res: Response, next: NextFunc
     next(error);
   }
 };
+exports.createCategory = createCategory;
 
-export const getCategories = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+
+const getCategories = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const tenantId = req.params.tenantId as string;
     
@@ -54,8 +57,10 @@ export const getCategories = async (req: Request, res: Response, next: NextFunct
     next(error);
   }
 };
+exports.getCategories = getCategories;
 
-export const updateCategory = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+
+const updateCategory = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const tenantId = req.params.tenantId as string;
     const categoryId = req.params.categoryId as string;
@@ -82,8 +87,10 @@ export const updateCategory = async (req: Request, res: Response, next: NextFunc
     next(error);
   }
 };
+exports.updateCategory = updateCategory;
 
-export const deleteCategory = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+
+const deleteCategory = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const tenantId = req.params.tenantId as string;
     const categoryId = req.params.categoryId as string;
@@ -109,3 +116,5 @@ export const deleteCategory = async (req: Request, res: Response, next: NextFunc
     next(error);
   }
 };
+exports.deleteCategory = deleteCategory;
+

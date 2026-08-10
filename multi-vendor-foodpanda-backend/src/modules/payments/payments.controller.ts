@@ -1,11 +1,16 @@
-import { Request, Response } from 'express';
-import { stripeClient } from '../../lib/stripe.js';
-import { getIO } from '../../lib/socket.js';
-import { prisma } from '../../config/prisma.js';
-import { AuditService } from '../../lib/audit.js';
+import type { Request, Response } from 'express';
+
+const { stripeClient } = require('../../lib/stripe');
+
+const { getIO } = require('../../lib/socket');
+
+const { prisma } = require('../../config/prisma');
+
+const { AuditService } = require('../../lib/audit');
+
 
 // 1. Onboard a Connected Account
-export const onboardTenant = async (req: Request, res: Response) => {
+const onboardTenant = async (req: Request, res: Response) => {
   try {
     const { tenantId, email, name } = req.body;
     
@@ -87,9 +92,11 @@ export const onboardTenant = async (req: Request, res: Response) => {
     res.status(500).json({ error: error.message });
   }
 };
+exports.onboardTenant = onboardTenant;
+
 
 // 2. Create a Stripe Product
-export const createProduct = async (req: Request, res: Response) => {
+const createProduct = async (req: Request, res: Response) => {
   try {
     const { menuItemId, name, description, price, tenantId } = req.body;
 
@@ -118,9 +125,11 @@ export const createProduct = async (req: Request, res: Response) => {
     res.status(500).json({ error: error.message });
   }
 };
+exports.createProduct = createProduct;
+
 
 // 3. Create Checkout Session (Destination Charge)
-export const createCheckoutSession = async (req: Request, res: Response) => {
+const createCheckoutSession = async (req: Request, res: Response) => {
   try {
     const { items, formData, couponCode } = req.body;
     if (!items || items.length === 0) {
@@ -265,8 +274,10 @@ export const createCheckoutSession = async (req: Request, res: Response) => {
     res.status(500).json({ error: error.message });
   }
 };
+exports.createCheckoutSession = createCheckoutSession;
 
-export const generateDashboardLink = async (req: Request, res: Response) => {
+
+const generateDashboardLink = async (req: Request, res: Response) => {
   try {
     const { tenantId } = req.body;
     
@@ -283,9 +294,11 @@ export const generateDashboardLink = async (req: Request, res: Response) => {
     res.status(500).json({ error: error.message });
   }
 };
+exports.generateDashboardLink = generateDashboardLink;
+
 
 // 4. Webhook (Thin events for V2 Accounts)
-export const webhookHandler = async (req: Request, res: Response) => {
+const webhookHandler = async (req: Request, res: Response) => {
   const sig = req.headers['stripe-signature'] as string;
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || 'whsec_placeholder';
 
@@ -362,3 +375,5 @@ export const webhookHandler = async (req: Request, res: Response) => {
     res.status(500).send(`Webhook Fetch Error: ${err.message}`);
   }
 };
+exports.webhookHandler = webhookHandler;
+

@@ -1,10 +1,17 @@
-import { Router } from 'express';
-import { createMenuItem, getMenuItems, updateMenuItem, deleteMenuItem } from './menu-item.controller.js';
-import { validateRequest } from '../../middlewares/validate.middleware.js';
-import { requireAuth } from '../../middlewares/auth.middleware.js';
-import { createMenuItemSchema, updateMenuItemSchema } from './menu-item.schema.js';
-import { upload } from '../../middlewares/upload.middleware.js';
-import modifierRoutes from './modifier.routes.js';
+const { Router } = require('express');
+
+const { createMenuItem, getMenuItems, updateMenuItem, deleteMenuItem } = require('./menu-item.controller');
+
+const { validateRequest } = require('../../middlewares/validate.middleware');
+
+const { requireAuth } = require('../../middlewares/auth.middleware');
+
+const { createMenuItemSchema, updateMenuItemSchema } = require('./menu-item.schema');
+
+const { upload } = require('../../middlewares/upload.middleware');
+
+const modifierRoutes = require('./modifier.routes');
+
 
 const router = Router({ mergeParams: true });
 
@@ -18,4 +25,4 @@ router.delete('/:itemId', requireAuth, deleteMenuItem);
 // Nested Modifiers
 router.use('/:itemId/modifiers', modifierRoutes);
 
-export default router;
+module.exports = router;

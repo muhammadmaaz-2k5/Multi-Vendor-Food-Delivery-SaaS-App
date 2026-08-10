@@ -1,10 +1,15 @@
-import app from './app.js';
-import { env } from './config/env.js';
-import { prisma } from './config/prisma.js';
-import './workers/index.js'; // Initialize workers
+const app = require('./app');
 
-import { createServer } from 'http';
-import { initSocket } from './lib/socket.js';
+const { env } = require('./config/env');
+
+const { prisma } = require('./config/prisma');
+
+require('./workers/index'); // Initialize workers
+
+const { createServer } = require('http');
+
+const { initSocket } = require('./lib/socket');
+
 
 const startServer = async () => {
   try {

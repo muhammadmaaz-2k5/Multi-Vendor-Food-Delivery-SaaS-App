@@ -1,10 +1,14 @@
-import { Request, Response } from 'express';
-import { prisma } from '../../config/prisma.js';
-import { getIO } from '../../lib/socket.js';
-import { NotificationService } from '../../lib/notifications.js';
+import type { Request, Response } from 'express';
+
+const { prisma } = require('../../config/prisma');
+
+const { getIO } = require('../../lib/socket');
+
+const { NotificationService } = require('../../lib/notifications');
+
 
 // Get orders by phone number (pseudo-auth for guest checkout)
-export const getCustomerOrders = async (req: Request, res: Response) => {
+const getCustomerOrders = async (req: Request, res: Response) => {
   try {
     const { phone } = req.params;
 
@@ -28,9 +32,11 @@ export const getCustomerOrders = async (req: Request, res: Response) => {
     res.status(500).json({ error: error.message });
   }
 };
+exports.getCustomerOrders = getCustomerOrders;
+
 
 // Get active orders for a tenant's KDS
-export const getTenantOrders = async (req: Request, res: Response) => {
+const getTenantOrders = async (req: Request, res: Response) => {
   try {
     const { tenantId } = req.params;
 
@@ -52,9 +58,11 @@ export const getTenantOrders = async (req: Request, res: Response) => {
     res.status(500).json({ error: error.message });
   }
 };
+exports.getTenantOrders = getTenantOrders;
+
 
 // Update order status (used by KDS)
-export const updateOrderStatus = async (req: Request, res: Response) => {
+const updateOrderStatus = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { status } = req.body; // e.g. PREPARING, READY
@@ -182,8 +190,10 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
     res.status(500).json({ error: error.message });
   }
 };
+exports.updateOrderStatus = updateOrderStatus;
 
-export const validateCoupon = async (req: Request, res: Response): Promise<any> => {
+
+const validateCoupon = async (req: Request, res: Response): Promise<any> => {
   try {
     const { code, subtotal, tenantId } = req.body;
     
@@ -229,8 +239,10 @@ export const validateCoupon = async (req: Request, res: Response): Promise<any> 
     res.status(500).json({ error: error.message });
   }
 };
+exports.validateCoupon = validateCoupon;
 
-export const createReview = async (req: Request, res: Response): Promise<any> => {
+
+const createReview = async (req: Request, res: Response): Promise<any> => {
   try {
     const { id } = req.params;
     const { rating, comment, customerName } = req.body;
@@ -278,3 +290,5 @@ export const createReview = async (req: Request, res: Response): Promise<any> =>
     res.status(500).json({ error: error.message });
   }
 };
+exports.createReview = createReview;
+

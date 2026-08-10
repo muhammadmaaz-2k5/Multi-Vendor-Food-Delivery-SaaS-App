@@ -1,8 +1,10 @@
-import { Request, Response } from 'express';
-import { prisma } from '../../config/prisma.js';
+import type { Request, Response } from 'express';
+
+const { prisma } = require('../../config/prisma');
+
 
 // MVP Hack: Auto-create or fetch a Dummy Rider for mobile app testing
-export const getMyProfile = async (req: Request, res: Response) => {
+const getMyProfile = async (req: Request, res: Response) => {
   try {
     let rider = await prisma.rider.findFirst({
       include: { user: true }
@@ -35,8 +37,10 @@ export const getMyProfile = async (req: Request, res: Response) => {
     res.status(500).json({ error: error.message });
   }
 };
+exports.getMyProfile = getMyProfile;
 
-export const toggleStatus = async (req: Request, res: Response) => {
+
+const toggleStatus = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { isOnline, lat, lng } = req.body;
@@ -57,3 +61,5 @@ export const toggleStatus = async (req: Request, res: Response) => {
     res.status(500).json({ error: error.message });
   }
 };
+exports.toggleStatus = toggleStatus;
+

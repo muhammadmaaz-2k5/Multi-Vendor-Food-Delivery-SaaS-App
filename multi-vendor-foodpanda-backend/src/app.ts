@@ -1,14 +1,25 @@
-import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import { errorHandler } from './middlewares/error.middleware.js';
-import authRoutes from './modules/auth/auth.routes.js';
-import restaurantRoutes from './modules/restaurant/restaurant.routes.js';
-import discoveryRoutes from './modules/discovery/discovery.routes.js';
-import paymentsRoutes from './modules/payments/payments.routes.js';
-import ordersRoutes from './modules/orders/orders.routes.js';
-import ridersRoutes from './modules/riders/riders.routes.js';
-import adminRoutes from './modules/admin/admin.routes.js';
+const express = require('express');
+
+const cors = require('cors');
+
+const helmet = require('helmet');
+
+const { errorHandler } = require('./middlewares/error.middleware');
+
+const authRoutes = require('./modules/auth/auth.routes');
+
+const restaurantRoutes = require('./modules/restaurant/restaurant.routes');
+
+const discoveryRoutes = require('./modules/discovery/discovery.routes');
+
+const paymentsRoutes = require('./modules/payments/payments.routes');
+
+const ordersRoutes = require('./modules/orders/orders.routes');
+
+const ridersRoutes = require('./modules/riders/riders.routes');
+
+const adminRoutes = require('./modules/admin/admin.routes');
+
 
 const app = express();
 
@@ -29,4 +40,4 @@ app.use('/api/v1/admin', adminRoutes);
 // Error Handling
 app.use(errorHandler);
 
-export default app;
+module.exports = app;

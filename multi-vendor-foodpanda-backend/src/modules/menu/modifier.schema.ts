@@ -1,6 +1,7 @@
-import { z } from 'zod';
+const { z } = require('zod');
 
-export const createModifierGroupSchema = z.object({
+
+const createModifierGroupSchema = z.object({
   body: z.object({
     name: z.string().min(1, 'Group name is required'),
     isRequired: z.boolean().default(false),
@@ -13,3 +14,5 @@ export const createModifierGroupSchema = z.object({
     })).optional(),
   }),
 });
+exports.createModifierGroupSchema = createModifierGroupSchema;
+

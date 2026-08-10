@@ -1,4 +1,5 @@
-import { getIO } from './socket.js';
+const { getIO } = require('./socket');
+
 
 /**
  * Notification Service
@@ -6,7 +7,7 @@ import { getIO } from './socket.js';
  * while simultaneously emitting real-time Socket.io events for in-app notifications.
  */
 
-export const NotificationService = {
+const NotificationService = {
   
   async sendCustomerNotification(phone: string, title: string, body: string) {
     // 1. Mock SMS/Email Gateway
@@ -40,3 +41,5 @@ export const NotificationService = {
   }
 
 };
+exports.NotificationService = NotificationService;
+

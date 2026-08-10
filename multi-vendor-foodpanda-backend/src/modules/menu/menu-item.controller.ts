@@ -1,6 +1,8 @@
 import type { Request, Response, NextFunction } from 'express';
-import { prisma } from '../../config/prisma.js';
-import { uploadImageToCloudinary } from '../../utils/cloudinary.js';
+const { prisma } = require('../../config/prisma');
+
+const { uploadImageToCloudinary } = require('../../utils/cloudinary');
+
 
 // Helper to check access
 const checkTenantAccess = async (userId: string, tenantId: string) => {
@@ -12,7 +14,7 @@ const checkTenantAccess = async (userId: string, tenantId: string) => {
   }
 };
 
-export const createMenuItem = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+const createMenuItem = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const tenantId = req.params.tenantId as string;
     const categoryId = req.params.categoryId as string;
@@ -62,8 +64,10 @@ export const createMenuItem = async (req: Request, res: Response, next: NextFunc
     next(error);
   }
 };
+exports.createMenuItem = createMenuItem;
 
-export const getMenuItems = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+
+const getMenuItems = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const tenantId = req.params.tenantId as string;
     const categoryId = req.params.categoryId as string;
@@ -78,8 +82,10 @@ export const getMenuItems = async (req: Request, res: Response, next: NextFuncti
     next(error);
   }
 };
+exports.getMenuItems = getMenuItems;
 
-export const updateMenuItem = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+
+const updateMenuItem = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const tenantId = req.params.tenantId as string;
     const itemId = req.params.itemId as string;
@@ -117,8 +123,10 @@ export const updateMenuItem = async (req: Request, res: Response, next: NextFunc
     next(error);
   }
 };
+exports.updateMenuItem = updateMenuItem;
 
-export const deleteMenuItem = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+
+const deleteMenuItem = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const tenantId = req.params.tenantId as string;
     const itemId = req.params.itemId as string;
@@ -144,3 +152,5 @@ export const deleteMenuItem = async (req: Request, res: Response, next: NextFunc
     next(error);
   }
 };
+exports.deleteMenuItem = deleteMenuItem;
+

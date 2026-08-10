@@ -1,10 +1,16 @@
-import { Queue } from 'bullmq';
-import { redis } from '../config/redis.js';
+const { Queue } = require('bullmq');
 
-export const emailQueue = new Queue('EmailQueue', {
+const { redis } = require('../config/redis');
+
+
+const emailQueue = new Queue('EmailQueue', {
   connection: redis,
 });
+exports.emailQueue = emailQueue;
 
-export const sendWelcomeEmailJob = async (email: string, firstName: string) => {
+
+const sendWelcomeEmailJob = async (email: string, firstName: string) => {
   await emailQueue.add('sendWelcomeEmail', { email, firstName });
 };
+exports.sendWelcomeEmailJob = sendWelcomeEmailJob;
+

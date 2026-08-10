@@ -1,6 +1,7 @@
-import { prisma } from '../config/prisma.js';
+const { prisma } = require('../config/prisma');
 
-export class AuditService {
+
+class AuditService {
   static async log(params: {
     action: string;
     entity: string;
@@ -26,3 +27,4 @@ export class AuditService {
     }
   }
 }
+exports.AuditService = AuditService;

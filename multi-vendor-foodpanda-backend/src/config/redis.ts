@@ -1,6 +1,10 @@
-import { Redis } from 'ioredis';
-import { env } from './env.js';
+const { Redis } = require('ioredis');
 
-export const redis = new Redis(env.REDIS_URL, {
+const { env } = require('./env');
+
+
+const redis = new Redis(env.REDIS_URL, {
   maxRetriesPerRequest: null,
 });
+exports.redis = redis;
+

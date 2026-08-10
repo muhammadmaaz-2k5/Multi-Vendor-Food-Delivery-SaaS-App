@@ -1,10 +1,14 @@
 import type { Request, Response, NextFunction } from 'express';
-import bcrypt from 'bcrypt';
-import { prisma } from '../../config/prisma.js';
-import { generateToken } from '../../utils/jwt.js';
-import { sendWelcomeEmailJob } from '../../queues/email.queue.js';
+const bcrypt = require('bcrypt');
 
-export const register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+const { prisma } = require('../../config/prisma');
+
+const { generateToken } = require('../../utils/jwt');
+
+const { sendWelcomeEmailJob } = require('../../queues/email.queue');
+
+
+const register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { email, password, firstName, lastName } = req.body;
 
@@ -46,8 +50,10 @@ export const register = async (req: Request, res: Response, next: NextFunction):
     next(error);
   }
 };
+exports.register = register;
 
-export const login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+
+const login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { email, password } = req.body;
 
@@ -81,8 +87,10 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
     next(error);
   }
 };
+exports.login = login;
 
-export const getMe = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+
+const getMe = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const userId = (req as any).user.id;
     const user = await prisma.user.findUnique({
@@ -111,3 +119,5 @@ export const getMe = async (req: Request, res: Response, next: NextFunction): Pr
     next(error);
   }
 };
+exports.getMe = getMe;
+

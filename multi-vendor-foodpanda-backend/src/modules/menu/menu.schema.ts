@@ -1,6 +1,7 @@
-import { z } from 'zod';
+const { z } = require('zod');
 
-export const createMenuCategorySchema = z.object({
+
+const createMenuCategorySchema = z.object({
   body: z.object({
     name: z.string().min(1, 'Category name is required'),
     description: z.string().optional(),
@@ -8,8 +9,10 @@ export const createMenuCategorySchema = z.object({
     isActive: z.boolean().optional(),
   }),
 });
+exports.createMenuCategorySchema = createMenuCategorySchema;
 
-export const updateMenuCategorySchema = z.object({
+
+const updateMenuCategorySchema = z.object({
   body: z.object({
     name: z.string().min(1, 'Category name is required').optional(),
     description: z.string().optional(),
@@ -17,3 +20,5 @@ export const updateMenuCategorySchema = z.object({
     isActive: z.boolean().optional(),
   }),
 });
+exports.updateMenuCategorySchema = updateMenuCategorySchema;
+

@@ -1,6 +1,7 @@
-import { z } from 'zod';
+const { z } = require('zod');
 
-export const createMenuItemSchema = z.object({
+
+const createMenuItemSchema = z.object({
   body: z.object({
     name: z.string().min(1, 'Item name is required'),
     description: z.string().optional(),
@@ -9,8 +10,10 @@ export const createMenuItemSchema = z.object({
     isAvailable: z.preprocess((val) => val === 'true' || val === true, z.boolean()).optional(),
   }),
 });
+exports.createMenuItemSchema = createMenuItemSchema;
 
-export const updateMenuItemSchema = z.object({
+
+const updateMenuItemSchema = z.object({
   body: z.object({
     name: z.string().min(1, 'Item name is required').optional(),
     description: z.string().optional(),
@@ -19,3 +22,5 @@ export const updateMenuItemSchema = z.object({
     isAvailable: z.preprocess((val) => val !== undefined ? (val === 'true' || val === true) : undefined, z.boolean().optional()),
   }),
 });
+exports.updateMenuItemSchema = updateMenuItemSchema;
+

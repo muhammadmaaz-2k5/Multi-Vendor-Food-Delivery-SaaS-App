@@ -1,10 +1,17 @@
-import { Router } from 'express';
-import { registerRestaurant, getMyRestaurants, updateSettings, getWallet, getReviews, getAnalytics } from './restaurant.controller.js';
-import { validateRequest } from '../../middlewares/validate.middleware.js';
-import { requireAuth } from '../../middlewares/auth.middleware.js';
-import { registerRestaurantSchema } from './restaurant.schema.js';
-import menuRoutes from '../menu/menu.routes.js';
-import menuItemRoutes from '../menu/menu-item.routes.js';
+const { Router } = require('express');
+
+const { registerRestaurant, getMyRestaurants, updateSettings, getWallet, getReviews, getAnalytics } = require('./restaurant.controller');
+
+const { validateRequest } = require('../../middlewares/validate.middleware');
+
+const { requireAuth } = require('../../middlewares/auth.middleware');
+
+const { registerRestaurantSchema } = require('./restaurant.schema');
+
+const menuRoutes = require('../menu/menu.routes');
+
+const menuItemRoutes = require('../menu/menu-item.routes');
+
 
 const router = Router();
 
@@ -18,4 +25,4 @@ router.use('/:tenantId/categories', menuRoutes);
 router.use('/:tenantId/categories/:categoryId/items', menuItemRoutes);
 router.use('/:tenantId/items', menuItemRoutes);
 
-export default router;
+module.exports = router;

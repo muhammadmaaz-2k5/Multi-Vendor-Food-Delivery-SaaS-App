@@ -1,8 +1,13 @@
-import { Router } from 'express';
-import { createModifierGroup, deleteModifierGroup } from './modifier.controller.js';
-import { validateRequest } from '../../middlewares/validate.middleware.js';
-import { requireAuth } from '../../middlewares/auth.middleware.js';
-import { createModifierGroupSchema } from './modifier.schema.js';
+const { Router } = require('express');
+
+const { createModifierGroup, deleteModifierGroup } = require('./modifier.controller');
+
+const { validateRequest } = require('../../middlewares/validate.middleware');
+
+const { requireAuth } = require('../../middlewares/auth.middleware');
+
+const { createModifierGroupSchema } = require('./modifier.schema');
+
 
 const router = Router({ mergeParams: true });
 
@@ -10,4 +15,4 @@ const router = Router({ mergeParams: true });
 router.post('/', requireAuth, validateRequest(createModifierGroupSchema), createModifierGroup);
 router.delete('/:groupId', requireAuth, deleteModifierGroup);
 
-export default router;
+module.exports = router;

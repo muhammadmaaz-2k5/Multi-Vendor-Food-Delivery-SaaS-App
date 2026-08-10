@@ -1,11 +1,13 @@
-import { v2 as cloudinary } from 'cloudinary';
-import { env } from '../config/env.js';
+const { v2: cloudinary } = require('cloudinary');
+
+const { env } = require('../config/env');
+
 
 // Configuration is automatically picked up from process.env.CLOUDINARY_URL
 // But we can be explicit if we want:
 // cloudinary.config({});
 
-export const uploadImageToCloudinary = async (file: Express.Multer.File, folder: string = 'items'): Promise<string> => {
+const uploadImageToCloudinary = async (file: Express.Multer.File, folder: string = 'items'): Promise<string> => {
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
       { 
@@ -22,3 +24,5 @@ export const uploadImageToCloudinary = async (file: Express.Multer.File, folder:
     uploadStream.end(file.buffer);
   });
 };
+exports.uploadImageToCloudinary = uploadImageToCloudinary;
+

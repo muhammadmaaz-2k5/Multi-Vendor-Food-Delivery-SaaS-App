@@ -1,5 +1,7 @@
-import { z } from 'zod';
-import dotenv from 'dotenv';
+const { z } = require('zod');
+
+const dotenv = require('dotenv');
+
 dotenv.config();
 
 const envSchema = z.object({
@@ -11,4 +13,6 @@ const envSchema = z.object({
   CLOUDINARY_UPLOAD_PRESET: z.string().default('vendor-food'),
 });
 
-export const env = envSchema.parse(process.env);
+const env = envSchema.parse(process.env);
+exports.env = env;
+

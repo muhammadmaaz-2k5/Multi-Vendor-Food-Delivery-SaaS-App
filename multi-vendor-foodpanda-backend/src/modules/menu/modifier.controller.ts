@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
-import { prisma } from '../../config/prisma.js';
+const { prisma } = require('../../config/prisma');
+
 
 const checkTenantAccess = async (userId: string, tenantId: string) => {
   const userRole = await prisma.userRole.findFirst({
@@ -10,7 +11,7 @@ const checkTenantAccess = async (userId: string, tenantId: string) => {
   }
 };
 
-export const createModifierGroup = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+const createModifierGroup = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const tenantId = req.params.tenantId as string;
     const itemId = req.params.itemId as string;
@@ -58,8 +59,10 @@ export const createModifierGroup = async (req: Request, res: Response, next: Nex
     next(error);
   }
 };
+exports.createModifierGroup = createModifierGroup;
 
-export const deleteModifierGroup = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+
+const deleteModifierGroup = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const tenantId = req.params.tenantId as string;
     const groupId = req.params.groupId as string;
@@ -90,3 +93,5 @@ export const deleteModifierGroup = async (req: Request, res: Response, next: Nex
     next(error);
   }
 };
+exports.deleteModifierGroup = deleteModifierGroup;
+

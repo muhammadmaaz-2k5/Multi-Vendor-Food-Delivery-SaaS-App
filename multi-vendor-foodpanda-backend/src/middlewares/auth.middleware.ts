@@ -1,7 +1,8 @@
 import type { Request, Response, NextFunction } from 'express';
-import { verifyToken } from '../utils/jwt.js';
+const { verifyToken } = require('../utils/jwt');
 
-export const requireAuth = (req: Request, res: Response, next: NextFunction): void => {
+
+const requireAuth = (req: Request, res: Response, next: NextFunction): void => {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader?.startsWith('Bearer ')) {
@@ -24,3 +25,5 @@ export const requireAuth = (req: Request, res: Response, next: NextFunction): vo
     res.status(401).json({ success: false, message: 'Invalid or expired token' });
   }
 };
+exports.requireAuth = requireAuth;
+

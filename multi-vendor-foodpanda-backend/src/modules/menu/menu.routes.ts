@@ -1,8 +1,13 @@
-import { Router } from 'express';
-import { createCategory, getCategories, updateCategory, deleteCategory } from './menu.controller.js';
-import { validateRequest } from '../../middlewares/validate.middleware.js';
-import { requireAuth } from '../../middlewares/auth.middleware.js';
-import { createMenuCategorySchema, updateMenuCategorySchema } from './menu.schema.js';
+const { Router } = require('express');
+
+const { createCategory, getCategories, updateCategory, deleteCategory } = require('./menu.controller');
+
+const { validateRequest } = require('../../middlewares/validate.middleware');
+
+const { requireAuth } = require('../../middlewares/auth.middleware');
+
+const { createMenuCategorySchema, updateMenuCategorySchema } = require('./menu.schema');
+
 
 // This router will be mounted at /api/v1/restaurants/:tenantId/categories
 const router = Router({ mergeParams: true }); 
@@ -12,4 +17,4 @@ router.get('/', getCategories);
 router.patch('/:categoryId', requireAuth, validateRequest(updateMenuCategorySchema), updateCategory);
 router.delete('/:categoryId', requireAuth, deleteCategory);
 
-export default router;
+module.exports = router;

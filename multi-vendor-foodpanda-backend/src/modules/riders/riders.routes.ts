@@ -1,9 +1,11 @@
-import { Router } from 'express';
-import { getMyProfile, toggleStatus } from './riders.controller.js';
+const { Router } = require('express');
+
+const { getMyProfile, toggleStatus } = require('./riders.controller');
+
 
 const router = Router();
 
 router.get('/me', getMyProfile);
 router.patch('/:id/status', toggleStatus);
 
-export default router;
+module.exports = router;

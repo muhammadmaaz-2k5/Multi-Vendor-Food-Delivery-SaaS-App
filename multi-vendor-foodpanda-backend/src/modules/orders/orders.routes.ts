@@ -1,5 +1,7 @@
-import { Router } from 'express';
-import { getCustomerOrders, getTenantOrders, updateOrderStatus, validateCoupon, createReview } from './orders.controller.js';
+const { Router } = require('express');
+
+const { getCustomerOrders, getTenantOrders, updateOrderStatus, validateCoupon, createReview } = require('./orders.controller');
+
 
 const router = Router();
 
@@ -9,4 +11,4 @@ router.patch('/:id/status', updateOrderStatus);
 router.post('/validate-coupon', validateCoupon);
 router.post('/:id/reviews', createReview);
 
-export default router;
+module.exports = router;

@@ -1,8 +1,10 @@
 import type { Request, Response, NextFunction } from 'express';
-import { prisma } from '../../config/prisma.js';
-import { AuditService } from '../../lib/audit.js';
+const { prisma } = require('../../config/prisma');
 
-export const registerRestaurant = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+const { AuditService } = require('../../lib/audit');
+
+
+const registerRestaurant = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const userId = (req as any).user.id;
     const { name, description } = req.body;
@@ -49,8 +51,10 @@ export const registerRestaurant = async (req: Request, res: Response, next: Next
     next(error);
   }
 };
+exports.registerRestaurant = registerRestaurant;
 
-export const getMyRestaurants = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+
+const getMyRestaurants = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const userId = (req as any).user.id;
     
@@ -75,8 +79,10 @@ export const getMyRestaurants = async (req: Request, res: Response, next: NextFu
     next(error);
   }
 };
+exports.getMyRestaurants = getMyRestaurants;
 
-export const updateSettings = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+
+const updateSettings = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { id } = req.params;
     const { deliveryRadiusKm, lat, lng } = req.body;
@@ -111,8 +117,10 @@ export const updateSettings = async (req: Request, res: Response, next: NextFunc
     next(error);
   }
 };
+exports.updateSettings = updateSettings;
 
-export const getWallet = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+
+const getWallet = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { tenantId } = req.params;
 
@@ -150,8 +158,10 @@ export const getWallet = async (req: Request, res: Response, next: NextFunction)
     next(error);
   }
 };
+exports.getWallet = getWallet;
 
-export const getReviews = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+
+const getReviews = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { tenantId } = req.params;
     
@@ -169,8 +179,10 @@ export const getReviews = async (req: Request, res: Response, next: NextFunction
     next(error);
   }
 };
+exports.getReviews = getReviews;
 
-export const getAnalytics = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+
+const getAnalytics = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { tenantId } = req.params;
 
@@ -214,3 +226,5 @@ export const getAnalytics = async (req: Request, res: Response, next: NextFuncti
     next(error);
   }
 };
+exports.getAnalytics = getAnalytics;
+
