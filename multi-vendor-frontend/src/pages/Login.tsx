@@ -81,6 +81,33 @@ export default function Login() {
         <div className="auth-footer">
           Don't have an account? <Link to="/signup" className="auth-link">Sign up</Link>
         </div>
+
+        {/* Demo Accounts Section */}
+        <div style={{ marginTop: '2rem', padding: '1.25rem', background: 'rgba(255, 255, 255, 0.5)', backdropFilter: 'blur(10px)', borderRadius: '16px', fontSize: '0.875rem', color: '#475569', border: '1px solid rgba(255, 255, 255, 0.8)', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}>
+          <h3 style={{ margin: '0 0 0.75rem 0', color: '#0f172a', fontSize: '0.95rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ display: 'inline-block', width: '8px', height: '8px', background: '#10b981', borderRadius: '50%', boxShadow: '0 0 8px #10b981' }}></span>
+            Demo Credentials
+          </h3>
+          <p style={{ margin: '0 0 0.75rem 0', fontSize: '0.8rem', color: '#64748b' }}>Password for all accounts: <strong style={{ color: '#0f172a' }}>password123</strong></p>
+          <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <li style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '0.25rem', borderBottom: '1px dashed #cbd5e1' }}>
+              <span style={{ fontWeight: 600, color: '#334155' }}>Admin</span>
+              <span style={{ fontFamily: 'monospace', background: '#f1f5f9', padding: '2px 6px', borderRadius: '4px' }}>admin@foodpanda.com</span>
+            </li>
+            <li style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '0.25rem', borderBottom: '1px dashed #cbd5e1' }}>
+              <span style={{ fontWeight: 600, color: '#334155' }}>Owner</span>
+              <span style={{ fontFamily: 'monospace', background: '#f1f5f9', padding: '2px 6px', borderRadius: '4px' }}>owner@burgerjoint.com</span>
+            </li>
+            <li style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '0.25rem', borderBottom: '1px dashed #cbd5e1' }}>
+              <span style={{ fontWeight: 600, color: '#334155' }}>Customer</span>
+              <span style={{ fontFamily: 'monospace', background: '#f1f5f9', padding: '2px 6px', borderRadius: '4px' }}>customer@test.com</span>
+            </li>
+            <li style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontWeight: 600, color: '#334155' }}>Rider</span>
+              <span style={{ fontFamily: 'monospace', background: '#f1f5f9', padding: '2px 6px', borderRadius: '4px' }}>rider@test.com</span>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   );
