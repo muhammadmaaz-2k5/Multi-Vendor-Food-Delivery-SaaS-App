@@ -14,7 +14,6 @@ export default function AdminDashboard() {
     topRestaurants: [],
     topRiders: []
   });
-  });
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
