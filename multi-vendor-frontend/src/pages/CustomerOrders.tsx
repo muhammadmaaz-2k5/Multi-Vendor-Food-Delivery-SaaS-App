@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Search, Package, Clock, CheckCircle, Truck, Utensils, Star, X } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import { io, Socket } from 'socket.io-client';
-import Map, { Marker } from 'react-map-gl';
+import Map, { Marker } from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || '';

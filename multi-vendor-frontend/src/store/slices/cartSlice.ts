@@ -16,7 +16,8 @@ export interface CartItem {
   quantity: number;
   image?: string;
   modifiers: CartModifier[];
-  totalPrice: number; 
+  totalPrice: number;
+  tenantId?: string;
 }
 
 interface CartState {
