@@ -1,2 +1,0 @@
-export {};
-//# sourceMappingURL=menu.controller.d.ts.map
